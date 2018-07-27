@@ -1,0 +1,9 @@
+.toolbar {
+  margin-bottom: 10px; }
+
+.toolbar button {
+  margin-right: 5px; }
+
+.created-at-by {
+  font-size: 0.8em;
+  color: #777777; }

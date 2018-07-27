@@ -1,0 +1,31 @@
+.btn-primary {
+  background-color: #76b88f; }
+  .btn-primary:hover {
+    background-color: #65a17c; }
+  .btn-primary:disabled {
+    background-color: #76b88f; }
+
+.form-button {
+  margin-right: 5px;
+  position: relative; }
+
+.score-btn {
+  margin-right: 5px;
+  font-size: 0.8em; }
+
+.info span {
+  display: block;
+  font-size: 0.8em;
+  color: #777777; }
+
+.button-bar {
+  white-space: nowrap; }
+
+.action-item {
+  margin-bottom: 15px; }
+
+.add-new-input {
+  margin-bottom: 15px; }
+
+.margin-right {
+  margin-right: 5px; }

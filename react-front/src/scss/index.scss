@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+@import 'variables.scss';
+
+body {
+  background-color: #000000;
+  margin: 0;
+  padding: 0;
+  font-family: "メイリオ", Meiryo, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", Arial, Verdana, "ＭＳ Ｐゴシック", sans-serif;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-size:cover;
+
+}
+
+a {
+  color: #41638C;
+  &:hover {
+    color: #6993C8;
+    text-decoration: none;
+  }
+}
+
+.btn {
+  border: 0;
+}
+
+.btn-secondary {
+  background-color: $secondary-button;
+
+  &:hover{
+    background-color: $light-button;
+  }
+}
+
+.btn-active{
+  background-color: $light-button!important;
+}
+
+
+.marked-score {
+  background-color: $light-button;
+}
+
+.marked-score:disabled {
+  background-color: $light-button;
+}

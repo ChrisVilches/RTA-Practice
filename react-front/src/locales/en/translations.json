@@ -1,0 +1,55 @@
+{
+  "login-user-placeholder": "Username",
+  "login-password-placeholder": "Password",
+  "login-button": "Login",
+  "page-forbidden": "Access denied",
+  "new-game-created": "Created successfully",
+  "welcome-user": "Welcome, {{userName}}",
+
+  "modal-create-title": "Create new",
+  "modal-create-enter-name": "Name",
+  "modal-create-enter-wallpaper": "Wallpaper URL",
+  "modal-create-enter-ok-button": "Create",
+
+  "404": "Not found 404",
+  "RTA-what-is": "Real-time attack (or RTA) refers to the method a speedrun is timed in real-time, with external means. This includes load screens, pause screens, cutscenes, times when the console or game has to be restarted, and time when a savefile has to be loaded, for example after a death.",
+  "TAS-what-is": "A tool-assisted speedrun or tool-assisted superplay (TAS) is a set sequence of controller inputs used to perform a task in a video game.",
+  "page-under-construction": "This page is under construction.",
+  "dashboard-account-title": "Account",
+  "dashboard-list-games": "Game list",
+  "dashboard-settings": "Settings",
+  "dashboard-account": "Account",
+
+  "game-list-last-time-used": "Last practice time",
+  "game-list-rep-count": "Rep count",
+  "game-list-no-reps-yet": "Hasn't been practiced yet",
+  "game-list-n-times": "{{times}} times",
+
+  "score-0": "Nil",
+  "score-1": "Bad",
+  "score-2": "So-so",
+  "score-3": "Good",
+  "score-4": "Excellent",
+
+  "game-stats": "Stats",
+  "game-edit": "Edit",
+  "game-expand": "Expand",
+  "game-collapse": "Collapse",
+
+  "default": "Default",
+  "success-rate-total-times": "Success rate {{rate}}% ({{times}} times)",
+
+  "created-at-by": "Created at {{date}}, by {{author}}.",
+
+  "modal-accept": "Accept",
+  "modal-cancel": "Cancel",
+  "form-send": "Send",
+  "form-save": "Save",
+  "send-scores": "Send scores if you are done, or choked before finishing",
+
+  "make-everything-into-folder": "Turn all into folders",
+  "make-everything-into-leaf": "Turn all nodes into leafs",
+
+  "enter-new-name": "Enter new name"
+
+}

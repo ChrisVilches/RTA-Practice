@@ -1,0 +1,14 @@
+.homepage-main-block {
+  text-align: center;
+  line-height: 30px;
+  font-size: 1.7em;
+  padding: 0 40px; }
+  .homepage-main-block img {
+    width: 300px; }
+
+.highlight {
+  color: #ff8243;
+  font-weight: bold; }
+
+.vertical-middle-text {
+  padding-top: 100px; }

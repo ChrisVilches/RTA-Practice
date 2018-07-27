@@ -1,0 +1,59 @@
+{
+
+  "login-user-placeholder": "ユーザー",
+  "login-password-placeholder": "パスワード",
+  "login-button": "ログイン",
+  "page-forbidden": "閲覧禁止",
+  "new-game-created": "作成しました",
+  "welcome-user": "ようこそ、{{userName}}さん",
+
+  "modal-create-title": "新規作成",
+  "modal-create-enter-name": "名前を入力してください",
+  "modal-create-enter-wallpaper": "壁紙のURLを入力してください",
+  "modal-create-enter-ok-button": "作成",
+
+  "New": "新しい",
+  "Account": "アカウント",
+  "Logout": "ログアウト",
+  "404": "ご指定のページを表示できません。",
+  "page-under-construction": "このページは現在作成中です。",
+  "RTA-what-is": "RTA(リアルタイムアタック)とは、 プレイ開始からクリアまでに実際にかかった時間の短さを競うプレイスタイルのことを言います。",
+  "TAS-what-is": "「TAS」とは、「Tool Assisted Speedrun」を略した用語で、エミュレータなどのツールを用いて最高・最速のプレイを目指す動画のこと。",
+  "dashboard-account-title": "垢",
+  "dashboard-list-games": "ゲーム一覧",
+  "dashboard-settings": "設定",
+  "dashboard-account": "アカウント",
+
+  "game-list-last-time-used": "最終使用日付",
+  "game-list-rep-count": "練習回数",
+  "game-list-no-reps-yet": "練習したことありません",
+  "game-list-n-times": "{{times}}回",
+
+  "score-0": "失敗",
+  "score-1": "ムズい",
+  "score-2": "まあまあ",
+  "score-3": "十分",
+  "score-4": "成功",
+
+  "game-stats": "統計情報",
+  "game-edit": "編集",
+  "game-expand": "全部展開",
+  "game-collapse": "全部折りたたむ",
+
+  "default": "デフォルト",
+  "success-rate-total-times": "成功率{{rate}}%（実行回数{{times}}回）",
+
+  "created-at-by": "作成日{{date}}、作成者{{author}}さん。",
+
+  "modal-accept": "はい",
+  "modal-cancel": "キャンセル",
+  "form-send": "送信",
+  "form-save": "保存",
+  "send-scores": "完成したか途中で失敗した場合、スコアを保存します。",
+
+  "make-everything-into-folder": "すべてをフォルダにする",
+  "make-everything-into-leaf": "すべてを子ノード（リーフ）にする",
+
+  "enter-new-name": "新しい名前を入力してください"
+
+}

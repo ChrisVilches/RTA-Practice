@@ -1,0 +1,52 @@
+@import 'variables.scss';
+
+
+.btn-primary{
+  background-color: $primary-button;
+
+  &:hover{
+    background-color: $primary-button-darker;
+  }
+
+  &:disabled{
+    background-color: $primary-button;
+  }
+}
+
+.form-button{
+  margin-right: $button-margin-left;
+  position: relative;
+}
+
+.score-btn {
+  margin-right: $button-margin-left;
+  font-size: $small-font;
+
+}
+
+.info{
+
+  span{
+    display: block;
+    font-size: $small-font;
+    color: $light-font-color;
+  }
+
+}
+
+.button-bar{
+  white-space: nowrap;
+}
+
+
+.action-item{
+  margin-bottom: 15px;
+}
+
+.add-new-input{
+  margin-bottom: 15px;
+}
+
+.margin-right{
+  margin-right: 5px;
+}

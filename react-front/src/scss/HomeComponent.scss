@@ -1,0 +1,22 @@
+@import 'variables.scss';
+
+.homepage-main-block{
+
+  text-align: center;
+  line-height: 30px;
+  font-size: 1.7em;
+  img {
+    width: 300px;
+  }
+  padding: 0 40px;
+}
+
+
+.highlight{
+  color: $light-button;
+  font-weight: bold;
+}
+
+.vertical-middle-text{
+  padding-top: 100px;
+}

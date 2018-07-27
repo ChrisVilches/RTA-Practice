@@ -1,0 +1,18 @@
+.config-menu-item {
+  padding: 10px;
+  color: #000;
+  border-bottom: 1px solid #dadada;
+  display: block; }
+  .config-menu-item:hover {
+    background-color: #f5f5f5;
+    color: #000; }
+
+.config-menu-item-selected {
+  background-color: #f5f5f5; }
+
+.game-list-item {
+  margin-bottom: 20px; }
+  .game-list-item .game-list-item-info-container {
+    padding: 0;
+    font-size: 0.8em;
+    color: #828282; }

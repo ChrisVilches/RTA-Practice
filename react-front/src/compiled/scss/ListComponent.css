@@ -1,0 +1,16 @@
+.segment-list {
+  list-style-type: none;
+  border-left: 1px solid #f4f4f4; }
+
+.bullet {
+  padding: 5px; }
+
+.bullet:hover {
+  background-color: #f4f4f4; }
+
+.bullet-arrow-icon {
+  margin-left: 10px;
+  display: inline; }
+
+.actions-container {
+  padding: 10px 0; }

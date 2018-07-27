@@ -1,0 +1,14 @@
+@import 'variables.scss';
+
+.toolbar{
+  margin-bottom: 10px;
+}
+
+.toolbar button{
+  margin-right: $button-margin-left;
+}
+
+.created-at-by{
+  font-size: $small-font;
+  color: $light-font-color;
+}
