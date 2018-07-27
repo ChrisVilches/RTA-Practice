@@ -20,7 +20,7 @@ Global.resetTitle();
 i18next.use(LngDetector)
 .init({
   interpolation: { escapeValue: false },  // React already does escaping
-  lng: 'en',                              // language to use
+  lng: 'ja',                              // language to use
   resources: {
     en: {
       translations: transEN

@@ -6,6 +6,7 @@ import './compiled/ActionsComponent.css';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import { translate } from 'react-i18next';
+import Global from './Global';
 
 class ActionsComponent extends React.Component {
 
@@ -22,7 +23,8 @@ class ActionsComponent extends React.Component {
       latestUpdated: null,
       editable: false,
       newNames: [],
-      savingActions: false
+      saveTimeout: null,
+      savedMessageTimeout: null
     };
 
     this.setScore = this.setScore.bind(this);
@@ -34,11 +36,12 @@ class ActionsComponent extends React.Component {
     this.deleteAction = this.deleteAction.bind(this);
     this.renderNonEditable = this.renderNonEditable.bind(this);
     this.renderEditable = this.renderEditable.bind(this);
-    this.onClickSaveActions = this.onClickSaveActions.bind(this);
+    this.saveActions = this.saveActions.bind(this);
     this.moveUp = this.moveUp.bind(this);
     this.moveDown = this.moveDown.bind(this);
     this.addNewAction = this.addNewAction.bind(this);
     this.turnAllIntoFolders = this.turnAllIntoFolders.bind(this);
+    this.dispatchSaveTimeout = this.dispatchSaveTimeout.bind(this);
   }
 
 
@@ -84,7 +87,7 @@ class ActionsComponent extends React.Component {
   }
 
 
-  addNewAction(){
+  addNewAction(){console.log("NEW ACTION")
     let temp = this.state.newNames;
     temp.push({
       name: '',
@@ -92,6 +95,8 @@ class ActionsComponent extends React.Component {
     });
 
     this.setState({ newNames: temp });
+
+    this.dispatchSaveTimeout();
   }
 
   moveUp(index){
@@ -103,7 +108,9 @@ class ActionsComponent extends React.Component {
     newNames[index] = newNames[index-1];
     newNames[index-1] = temp;
 
-    this.setState({ newNames })
+    this.setState({ newNames });
+
+    this.dispatchSaveTimeout();
   }
 
   moveDown(index){
@@ -116,10 +123,34 @@ class ActionsComponent extends React.Component {
     newNames[index] = newNames[index+1];
     newNames[index+1] = temp;
 
-    this.setState({ newNames })
+    this.setState({ newNames });
+
+    this.dispatchSaveTimeout();
   }
 
-  onClickSaveActions(){
+
+  dispatchSaveTimeout(){
+
+    clearTimeout(this.state.savedMessageTimeout);
+
+    if(this.state.saveTimeout !== null){
+      clearTimeout(this.state.saveTimeout);
+    }
+
+    this.setState({
+      savedMessageTimeout: null,
+      saveTimeout: setTimeout(this.saveActions, Global.saveDelayTime)
+    });
+
+  }
+
+
+  saveActions(){
+
+    clearTimeout(this.state.saveTimeout);
+    this.setState({
+      saveTimeout: null
+    });
 
     let newChildren = [];
 
@@ -148,19 +179,25 @@ class ActionsComponent extends React.Component {
       newChildren.push(oldChild);
     }
 
-    this.setState({
-      savingActions: true
-    });
-
     this.props.saveActions(this.state.actions.nodeId, newChildren, function(){
       this.setState({
-        savingActions: false
+        savedMessageTimeout: setTimeout(function(){
+          this.setState({
+            savedMessageTimeout: null
+          });
+        }.bind(this), 1500)
       });
+
 
       this.createTempNamesArray();
 
     }.bind(this));
 
+  }
+
+  componentWillUnmount(){
+    clearTimeout(this.state.saveTimeout);
+    clearTimeout(this.state.savedMessageTimeout);
   }
 
 
@@ -173,6 +210,8 @@ class ActionsComponent extends React.Component {
     this.setState({
       newNames: temp
     });
+
+    this.dispatchSaveTimeout();
   }
 
   onChangeActionName(ev, i){
@@ -183,6 +222,8 @@ class ActionsComponent extends React.Component {
     temp[i].name = ev.target.value;
 
     this.setState({ newNames: temp });
+
+    this.dispatchSaveTimeout();
   }
 
 
@@ -259,6 +300,7 @@ class ActionsComponent extends React.Component {
 
   componentDidMount(){
     this.createTempNamesArray();
+    this.props.onRef(this);
   }
 
 
@@ -319,11 +361,7 @@ class ActionsComponent extends React.Component {
 
   renderEditable(){
 
-    const { t } = this.props;
-
     return <div>
-
-      <Button className="mb-4" onClick={this.turnAllIntoFolders}><FontAwesomeIcon icon='plus'/> {t("make-everything-into-folder")}</Button>
 
       {this.state.newNames.map(function(action, step){
 
@@ -341,12 +379,11 @@ class ActionsComponent extends React.Component {
 
       }.bind(this))}
 
-
       <Form inline className='add-new-input'>
-        <Button className='margin-right' color='secondary' onClick={this.addNewAction}><FontAwesomeIcon icon='plus'/></Button>
+        {this.state.saveTimeout === null? '' : <FontAwesomeIcon icon='spinner' spin/>}
+        {this.state.savedMessageTimeout === null? '' : <span><FontAwesomeIcon icon='check'/></span>}
       </Form>
 
-      <Button color='primary' onClick={this.onClickSaveActions} disabled={this.state.savingActions}>{t("form-save")}</Button>
     </div>;
 
   }

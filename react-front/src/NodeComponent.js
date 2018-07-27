@@ -3,22 +3,57 @@ import PropTypes from 'prop-types';
 import ActionsComponent from './ActionsComponent';
 import './compiled/NodeComponent.css';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { Button, Input, Form } from 'reactstrap';
+import { Input, Form, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { translate } from 'react-i18next';
+import Global from './Global';
 
 class NodeComponent extends React.Component {
 
   constructor(){
     super();
 
-    this.state = { latestUpdated: null, editable: false, newParentSegmentName: '', loadingAddNewBrother: false, loadingTurningIntoSingles: false, newNodeNameInput: '' };
+    this.state = {
+      latestUpdated: null,
+      editable: false,
+      newParentSegmentName: '',
+      loadingTurningIntoSingles: false,
+      newNodeNameInput: '',
+      saveTimeout: null,
+      savedMessageTimeout: null,
+      dropdownOpen: false
+    };
+
+    this.actionsComponent = React.createRef();
 
     this.toggleExpanded = this.toggleExpanded.bind(this);
-    this.onClickAddNewBrother = this.onClickAddNewBrother.bind(this);
+    this.addNewChildSegment = this.addNewChildSegment.bind(this);
     this.onClickTurnSingleActions = this.onClickTurnSingleActions.bind(this);
     this.onChangeNewNodeNameInput = this.onChangeNewNodeNameInput.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
     this.removeThisNode = this.removeThisNode.bind(this);
+    this.dispatchSaveTimeout = this.dispatchSaveTimeout.bind(this);
+    this.dropdownToggle = this.dropdownToggle.bind(this);
+  }
+
+  dropdownToggle() {
+    this.setState(prevState => ({
+      dropdownOpen: !prevState.dropdownOpen
+    }));
+  }
+
+  dispatchSaveTimeout(){
+
+    clearTimeout(this.state.savedMessageTimeout);
+
+    if(this.state.saveTimeout !== null){
+      clearTimeout(this.state.saveTimeout);
+    }
+
+    this.setState({
+      savedMessageTimeout: null,
+      saveTimeout: setTimeout(this.modifyNode, Global.saveDelayTime)
+    });
+
   }
 
   removeThisNode(){
@@ -27,20 +62,30 @@ class NodeComponent extends React.Component {
     this.props.modifyNode(this.state.node.nodeId, newNode);
   }
 
-  onClickAddNewBrother(ev){
-    ev.preventDefault();
-
-    this.setState({ loadingAddNewBrother: true });
-
-    this.props.addNewBrother(this.state.node.nodeId, function(){
-      this.setState({ loadingAddNewBrother: false });
-    }.bind(this));
+  addNewChildSegment(){
+    this.props.addNewChildSegment(this.state.node.nodeId);
   }
 
   modifyNode(){
+
+    clearTimeout(this.state.saveTimeout);
+    this.setState({
+      saveTimeout: null
+    });
+
     let newNode = this.state.node;
     newNode.name = this.state.newNodeNameInput;
-    this.props.modifyNode(this.state.node.nodeId, newNode);
+    this.props.modifyNode(this.state.node.nodeId, newNode, function(){
+
+      this.setState({
+        savedMessageTimeout: setTimeout(function(){
+          this.setState({
+            savedMessageTimeout: null
+          });
+        }.bind(this), 1500)
+      });
+
+    }.bind(this));
   }
 
   onChangeNewNodeNameInput(ev){
@@ -48,6 +93,8 @@ class NodeComponent extends React.Component {
     this.setState({
       newNodeNameInput: ev.target.value
     });
+
+    this.dispatchSaveTimeout();
   }
 
   onClickTurnSingleActions(ev){
@@ -113,6 +160,8 @@ class NodeComponent extends React.Component {
       }
     }
 
+    let hasFolders = node.hasOwnProperty('children') && node.children[0].hasOwnProperty('children');
+
     return <div>
 
     <div className='bullet' onClick={() => { this.toggleExpanded(node) }}>
@@ -126,25 +175,34 @@ class NodeComponent extends React.Component {
 
     {this.state.editable && this.state.node.expanded?
       <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
-        <Button className='margin-right' color='danger' onClick={this.removeThisNode}><FontAwesomeIcon icon='times'/></Button>
         <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} className="margin-right"/>
-        <Button color="primary" type="submit">{t("form-save")}</Button>
+
+        {this.state.saveTimeout === null? '' : <FontAwesomeIcon icon='spinner' spin/>}
+        {this.state.savedMessageTimeout === null? '' : <span><FontAwesomeIcon icon='check'/></span>}
+
+        <Dropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle}>
+          <DropdownToggle caret></DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={this.removeThisNode}>{t("remove-node")}</DropdownItem>
+
+            {hasFolders?
+              <DropdownItem onClick={this.addNewChildSegment}>{t("add-segment")}</DropdownItem> :
+              <DropdownItem onClick={this.actionsComponent.addNewAction}>{t("add-action")}</DropdownItem>
+            }
+            {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>{t("make-everything-into-leaf")}</DropdownItem> : ''}
+            {!hasFolders? <DropdownItem onClick={this.actionsComponent.turnAllIntoFolders}>{t("make-everything-into-folder")}</DropdownItem> : ''}
+
+          </DropdownMenu>
+        </Dropdown>
+
       </Form> : '' }
 
-
-    {(this.state.editable && this.state.node.expanded && canConvertToLeafs)?
-
-      <Button className="mb-2 mt-2" color="secondary" disabled={this.state.loadingTurningIntoSingles} onClick={this.onClickTurnSingleActions}>
-        <FontAwesomeIcon icon='minus'/> {t("make-everything-into-leaf")}
-      </Button>
-      : ''
-    }
 
 
     {
       (node.expanded && node.hasOwnProperty('children'))?
 
-      (node.children[0].hasOwnProperty('children')?
+      (hasFolders?
 
         <ul className='segment-list'>{node.children.map(function(n, i){
 
@@ -156,7 +214,7 @@ class NodeComponent extends React.Component {
             updateTreeData={this.props.updateTreeData}
             latestUpdated={this.state.latestUpdated}
             editable={this.state.editable}
-            addNewBrother={this.props.addNewBrother}
+            addNewChildSegment={this.props.addNewChildSegment}
             setScore={this.props.setScore}
             saveActions={this.props.saveActions}
             modifyNode={this.props.modifyNode}
@@ -176,19 +234,13 @@ class NodeComponent extends React.Component {
               latestUpdated={this.state.latestUpdated}
               saveActions={this.props.saveActions}
               setScore={this.props.setScore}
-              editable={this.state.editable}/>
+              editable={this.state.editable}
+              onRef={a => this.actionsComponent = a}/>
           </li>
         </ul>
 
       ) : ''
 
-    }
-
-    {this.state.editable && this.props.lastChild?
-      <Button color="secondary" disabled={this.state.loadingAddNewBrother} onClick={this.onClickAddNewBrother}>
-        <FontAwesomeIcon icon='plus'/>
-      </Button>
-      : ''
     }
 
     </div>;
@@ -199,7 +251,7 @@ class NodeComponent extends React.Component {
 
 NodeComponent.propTypes = {
   updateTreeData: PropTypes.func.isRequired,
-  addNewBrother: PropTypes.func.isRequired,
+  addNewChildSegment: PropTypes.func.isRequired,
   setScore: PropTypes.func.isRequired,
   saveActions: PropTypes.func.isRequired,
   node: PropTypes.object.isRequired,

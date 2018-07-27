@@ -26,7 +26,7 @@ class GameComponent extends Component {
     this.changeEditMode = this.changeEditMode.bind(this);
     this.setScore = this.setScore.bind(this);
     this.saveActions = this.saveActions.bind(this);
-    this.addNewBrother = this.addNewBrother.bind(this);
+    this.addNewChildSegment = this.addNewChildSegment.bind(this);
     this.setExpansionAll = this.setExpansionAll.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
   }
@@ -145,22 +145,17 @@ class GameComponent extends Component {
     }
   }
 
-  addNewBrother(nodeId, callback = ()=>{}){
+  addNewChildSegment(nodeId, callback = ()=>{}){
 
     let segments = this.state.game.children;
+    if(nodeId === -1){
+      segments.push({ name: '' });
+      this.updateTreeData(segments, callback);
+      return;
+    }
 
     GameComponent.findNodeUpdate(segments, nodeId, function(node, parent){
-
-      if(parent == null){
-
-        segments.push({
-          name: ''
-        });
-
-        return;
-      }
-
-      parent.children.push({
+      node.children.push({
         name: ''
       });
     });
@@ -245,7 +240,6 @@ class GameComponent extends Component {
 
   }
 
-
   componentDidMount(){
     let gameId = this.props.match.params.gameId;
 
@@ -306,12 +300,14 @@ class GameComponent extends Component {
                   segmentQuantity={this.state.game.children.length}
                   updateTreeData={this.updateTreeData}
                   latestUpdated={this.state.game.updatedAt}
-                  addNewBrother={this.addNewBrother}
+                  addNewChildSegment={this.addNewChildSegment}
                   editable={this.state.editable}
                   />;
 
               }.bind(this))
             }
+
+            {this.state.editable? <Button onClick={()=>{ this.addNewChildSegment(-1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
 
           </Col>
 

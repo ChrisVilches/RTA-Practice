@@ -31,6 +31,10 @@
   "score-3": "Good",
   "score-4": "Excellent",
 
+  "remove-node": "Remove",
+  "add-action": "New action",
+  "add-segment": "New segment",
+
   "game-stats": "Stats",
   "game-edit": "Edit",
   "game-expand": "Expand",

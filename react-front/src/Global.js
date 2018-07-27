@@ -10,6 +10,10 @@ class Global {
     return 'RTA Training';
   }
 
+  static get saveDelayTime(){
+    return 1000;
+  }
+
   static resetBackgroundImage(){
 
     document.body.style.backgroundImage = 'url(' + defaultBackground + ')';
