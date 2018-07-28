@@ -65,18 +65,19 @@ export const removeNode = function(_parentSegments, nodeId){
 
 
 
-export const addNewChildSegment = function(_parentSegments, nodeId){
+export const addNewChildSegment = function(_parentSegments, nodeId, name=''){
 
   let segments = _.cloneDeep(_parentSegments);
+  name = name.trim();
 
   if(nodeId === -1){
-    segments.push({ name: '' });
+    segments.push({ name });
     return segments;
   }
 
   segments = findNodeUpdate(segments, nodeId, function(node, parent){
     node.children.push({
-      name: ''
+      name
     });
   });
 

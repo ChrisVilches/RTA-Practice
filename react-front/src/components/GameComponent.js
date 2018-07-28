@@ -6,11 +6,10 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import Global from '../Global';
 import AuthService from '../AuthService';
 
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
 import { translate } from 'react-i18next';
 
 import '../compiled/GameComponent.css';
-import classNames from 'classnames';
 
 import * as tree from '../tree';
 
@@ -21,7 +20,7 @@ class GameComponent extends Component {
 
     this.authService = new AuthService();
 
-    this.state = { isOpen: false, modal: false };
+    this.state = { isOpen: false, modal: false, newNodeFormOpen: false, newNodeName: '' };
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.setScore = this.setScore.bind(this);
@@ -29,6 +28,8 @@ class GameComponent extends Component {
     this.modifyNode = this.modifyNode.bind(this);
     this.removeNode = this.removeNode.bind(this);
     this.loadGame = this.loadGame.bind(this);
+    this.onChangeNewNodeNameInput = this.onChangeNewNodeNameInput.bind(this);
+    this.addNewNode = this.addNewNode.bind(this);
   }
 
   get gameId(){
@@ -37,6 +38,23 @@ class GameComponent extends Component {
 
   get game(){
     return this.props.tree.game;
+  }
+
+  addNewNode(){
+    let name = this.state.newNodeName;
+    this.props.addNewChildSegment(this.game.children, this.gameId, -1, name, function(){
+      this.setState({
+        newNodeName: '',
+        newNodeFormOpen: false
+      });
+    }.bind(this));
+  }
+
+  onChangeNewNodeNameInput(ev){
+    ev.preventDefault();
+    this.setState({
+      newNodeName: ev.target.value
+    });
   }
 
   toggleModal() {
@@ -163,7 +181,7 @@ class GameComponent extends Component {
             <Button onClick={() => { this.props.setExpansionAll(true) }}><FontAwesomeIcon icon='folder-open'/> {t("game-expand")}</Button>
             <Button onClick={this.toggleModal}><FontAwesomeIcon icon='chart-bar'/> {t("game-stats")}</Button>
 
-            <Button onClick={this.props.toggleEditable} className={classNames({ 'btn-active': this.props.tree.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>
+            {/*<Button onClick={this.props.toggleEditable} className={classNames({ 'btn-active': this.props.tree.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>*/}
           </div>
 
           {
@@ -182,7 +200,19 @@ class GameComponent extends Component {
             }.bind(this))
           }
 
-          {this.props.tree.editable? <Button onClick={()=>{ this.props.addNewChildSegment(this.game.children, this.gameId, -1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
+          {/*this.props.tree.editable? <Button onClick={()=>{ this.props.addNewChildSegment(this.game.children, this.gameId, -1) }}><FontAwesomeIcon icon='plus'/></Button> : ''*/}
+
+          {this.state.newNodeFormOpen?
+
+            <Form inline onSubmit={ev => { ev.preventDefault(); this.addNewNode(); }}>
+              <Input autoFocus value={this.state.newNodeName} onChange={this.onChangeNewNodeNameInput}></Input>
+              <Button color="primary">{t("form-save")}</Button>
+            </Form>
+            :
+            <Button onClick={()=>{ this.setState({ newNodeFormOpen: true }) }}><FontAwesomeIcon icon='plus'/></Button>
+          }
+
+
 
         </Col>
 

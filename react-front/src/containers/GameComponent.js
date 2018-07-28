@@ -14,7 +14,7 @@ const mapDispatchToProps = dispatch => {
     toggleEditable: () => { dispatch(gameActions.toggleEditable()) },
     setExpansionAll: bool => { dispatch(gameActions.setExpansionAll(bool)) },
     updateTreeData: (segments, gameId, callback) => { dispatch(gameActions.updateTreeData(segments, gameId, callback)) },
-    addNewChildSegment: (segments, gameId, nodeId, callback) => { dispatch(nodeActions.addNewChildSegment(segments, gameId, nodeId, callback)) }
+    addNewChildSegment: (segments, gameId, nodeId, name, callback) => { dispatch(nodeActions.addNewChildSegment(segments, gameId, nodeId, name, callback)) }
   };
 }
 

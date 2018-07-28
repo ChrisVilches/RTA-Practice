@@ -25,12 +25,15 @@
   "game-list-no-reps-yet": "Hasn't been practiced yet",
   "game-list-n-times": "{{times}} times",
 
+  "more-options": "More options",
+
   "score-0": "Nil",
   "score-1": "Bad",
   "score-2": "So-so",
   "score-3": "Good",
   "score-4": "Excellent",
 
+  "rename-node": "Rename node",
   "remove-node": "Remove",
   "add-action": "New action",
   "add-segment": "New segment",

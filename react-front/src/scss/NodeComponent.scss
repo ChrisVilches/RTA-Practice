@@ -11,9 +11,19 @@
   background-color: #f4f4f4;
 }
 
-.bullet-arrow-icon{
-  margin-left: 10px;
+.margin-left-btn{
+  margin-left: 5px;
+}
+
+.node-toolbar-btn{
+  margin-right: 5px;
   display: inline;
+  padding: 10px 15px;
+  color: #ababab;
+
+  &:hover{
+    color: #ababab;
+  }
 }
 
 .actions-container{

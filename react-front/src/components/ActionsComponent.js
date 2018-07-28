@@ -6,7 +6,6 @@ import '../compiled/ActionsComponent.css';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import { translate } from 'react-i18next';
-import Global from '../Global';
 
 class ActionsComponent extends React.Component {
 
@@ -14,32 +13,47 @@ class ActionsComponent extends React.Component {
     super();
     this.state = {
       actions: [],
+      editing: [],
       step: 0,
       scores: [],
       uploadingScore: false,
       tooltipOpen: false,
       consistencyRates: [],
       repsEachAction: [],
-      newNames: [],
-      saveTimeout: null,
-      savedMessageTimeout: null
+      newNames: []
     };
+
+    this.editNameInputRef = React.createRef();
 
     this.setScore = this.setScore.bind(this);
     this.reset = this.reset.bind(this);
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.passScoresToParent = this.passScoresToParent.bind(this);
     this.onChangeActionName = this.onChangeActionName.bind(this);
-    this.createTempNamesArray = this.createTempNamesArray.bind(this);
+    this.createDataArrays = this.createDataArrays.bind(this);
     this.deleteAction = this.deleteAction.bind(this);
     this.renderNonEditable = this.renderNonEditable.bind(this);
-    this.renderEditable = this.renderEditable.bind(this);
     this.saveActions = this.saveActions.bind(this);
     this.moveUp = this.moveUp.bind(this);
     this.moveDown = this.moveDown.bind(this);
     this.addNewAction = this.addNewAction.bind(this);
     this.turnAllIntoFolders = this.turnAllIntoFolders.bind(this);
-    this.dispatchSaveTimeout = this.dispatchSaveTimeout.bind(this);
+    this.startEditing = this.startEditing.bind(this);
+  }
+
+  startEditing(step){
+
+    // バグを避ける
+    for(let i in this.state.editing){
+      if(this.state.editing[i] === true) return;
+    }
+
+    let editing = this.state.editing;
+    editing[step] = true;
+    this.setState({
+      editing
+    });
+
   }
 
 
@@ -82,7 +96,7 @@ class ActionsComponent extends React.Component {
   }
 
 
-  addNewAction(){console.log("NEW ACTION")
+  addNewAction(){
     let temp = this.state.newNames;
     temp.push({
       name: '',
@@ -91,7 +105,7 @@ class ActionsComponent extends React.Component {
 
     this.setState({ newNames: temp });
 
-    this.dispatchSaveTimeout();
+    this.saveActions();
   }
 
   moveUp(index){
@@ -105,7 +119,7 @@ class ActionsComponent extends React.Component {
 
     this.setState({ newNames });
 
-    this.dispatchSaveTimeout();
+    this.saveActions();
   }
 
   moveDown(index){
@@ -120,42 +134,33 @@ class ActionsComponent extends React.Component {
 
     this.setState({ newNames });
 
-    this.dispatchSaveTimeout();
-  }
-
-
-  dispatchSaveTimeout(){
-
-    clearTimeout(this.state.savedMessageTimeout);
-
-    if(this.state.saveTimeout !== null){
-      clearTimeout(this.state.saveTimeout);
-    }
-
-    this.setState({
-      savedMessageTimeout: null,
-      saveTimeout: setTimeout(this.saveActions, Global.saveDelayTime)
-    });
-
+    this.saveActions();
   }
 
 
   saveActions(){
 
-    clearTimeout(this.state.saveTimeout);
-    this.setState({
-      saveTimeout: null
-    });
+    let editing = this.state.editing;
+    for(let i=0; i < editing.length; i++){
+      editing[i] = false;
+    }
+    this.setState({ editing });
 
     let newChildren = [];
 
     let newNames = this.state.newNames;
     let actions = this.state.actions.children;
 
+    console.log("ACTIONS")
+    console.log(actions)
+    console.log("newnames")
+    console.log(newNames)
+
     for(let i=0; i < newNames.length; i++){
       let oldChild;
 
       if(newNames[i].nodeId === -1){
+
         // 新しい
         oldChild = {
           name: newNames[i].name,
@@ -175,25 +180,13 @@ class ActionsComponent extends React.Component {
     }
 
     this.props.saveActions(this.state.actions.nodeId, newChildren, function(){
-      this.setState({
-        savedMessageTimeout: setTimeout(function(){
-          this.setState({
-            savedMessageTimeout: null
-          });
-        }.bind(this), 1500)
-      });
 
-
-      this.createTempNamesArray();
+      this.createDataArrays();
 
     }.bind(this));
 
   }
 
-  componentWillUnmount(){
-    clearTimeout(this.state.saveTimeout);
-    clearTimeout(this.state.savedMessageTimeout);
-  }
 
 
   deleteAction(index){
@@ -206,7 +199,7 @@ class ActionsComponent extends React.Component {
       newNames: temp
     });
 
-    this.dispatchSaveTimeout();
+    this.saveActions();
   }
 
   onChangeActionName(ev, i){
@@ -217,10 +210,7 @@ class ActionsComponent extends React.Component {
     temp[i].name = ev.target.value;
 
     this.setState({ newNames: temp });
-
-    this.dispatchSaveTimeout();
   }
-
 
 
   passScoresToParent(){
@@ -269,32 +259,36 @@ class ActionsComponent extends React.Component {
     });
   }
 
-  createTempNamesArray(){
+  createDataArrays(){
     let newNames = [];
+    let editing = [];
 
     for(let i=0; i < this.state.actions.children.length; i++){
       newNames.push({
         nodeId: this.state.actions.children[i].nodeId,
         name: this.state.actions.children[i].name
       });
+
+      editing.push(false);
     }
 
     this.setState({
-      newNames
+      newNames,
+      editing
     });
   }
 
   componentDidUpdate(prevProps, prevState, snapshot){
 
     // editableをtrueにした
-    if(!prevProps.tree.editable && this.props.tree.editable){
+    if(prevProps.tree.game.updatedAt !== this.props.tree.game.updatedAt){
       this.reset();
-      this.createTempNamesArray();
+      this.createDataArrays();
     }
   }
 
   componentDidMount(){
-    this.createTempNamesArray();
+    this.createDataArrays();
     this.props.onRef(this);
   }
 
@@ -309,7 +303,22 @@ class ActionsComponent extends React.Component {
 
         return <div key={step} className='action-item'>
 
-          {action.name? action.name : <i>{t("default")}</i>}
+          {this.state.editing[step]?
+
+            <Form className="mt-2 mb-2" inline onSubmit={ev => { ev.preventDefault(); this.saveActions(); }}>
+              <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(step)}}><FontAwesomeIcon icon='times'/></Button>
+              <Input autoFocus ref={r => this.editNameInputRef = r } className='margin-right' value={this.state.newNames[step].name} onChange={(e) => {this.onChangeActionName(e, step)}} onBlur={()=>{setTimeout(this.saveActions.bind(this), 50)}}/>
+
+            </Form>
+
+            :
+            <span onClick={() => { this.startEditing(step) }}>
+              {action.nodeId}
+            {action.name? action.name : <i>{t("default")}</i>}
+            </span>
+          }
+
+
 
           <Row>
             <Col md='6'>
@@ -354,7 +363,7 @@ class ActionsComponent extends React.Component {
   }
 
 
-  renderEditable(){
+  /*renderEditable(){
 
     return <div>
 
@@ -362,9 +371,9 @@ class ActionsComponent extends React.Component {
 
         return <div key={step} className='action-item'>
 
-          <Form inline onSubmit={ev => { ev.preventDefault(); }}>
+          <Form inline onSubmit={ev => { ev.preventDefault(); this.saveActions(); }}>
             <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(step)}}><FontAwesomeIcon icon='times'/></Button>
-            <Input className='margin-right' value={action.name} onChange={(e) => {this.onChangeActionName(e, step)}}/>
+            <Input className='margin-right' value={action.name} onChange={(e) => {this.onChangeActionName(e, step)}} onBlur={this.saveActions}/>
 
             {step > 0? <Button type='button' className='margin-right' color='secondary' onClick={() => {this.moveUp(step)}}><FontAwesomeIcon icon='arrow-up'/></Button> : ''}
             {step < this.state.newNames.length-1? <Button className='margin-right' color='secondary' onClick={() => {this.moveDown(step)}}><FontAwesomeIcon icon='arrow-down'/></Button> : ''}
@@ -374,24 +383,22 @@ class ActionsComponent extends React.Component {
 
       }.bind(this))}
 
-      <Form inline className='add-new-input'>
-        {this.state.saveTimeout === null? '' : <FontAwesomeIcon icon='spinner' spin/>}
-        {this.state.savedMessageTimeout === null? '' : <span><FontAwesomeIcon icon='check'/></span>}
-      </Form>
 
     </div>;
 
-  }
+  }*/
 
 
   render(){
 
-    if(!this.props.tree.editable){
+    return this.renderNonEditable();
+
+    /*if(!this.props.tree.editable){
       return this.renderNonEditable();
-    }
+    }*/
 
     // editable == true
-    return this.renderEditable();
+    //return this.renderEditable();
   }
 
 }

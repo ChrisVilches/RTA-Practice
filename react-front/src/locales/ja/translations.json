@@ -29,12 +29,15 @@
   "game-list-no-reps-yet": "練習したことありません",
   "game-list-n-times": "{{times}}回",
 
+  "more-options": "メニュー",
+
   "score-0": "失敗",
   "score-1": "ムズい",
   "score-2": "まあまあ",
   "score-3": "十分",
   "score-4": "成功",
 
+  "rename-node": "名前を変える",
   "remove-node": "削除",
   "add-action": "新しいタスク",
   "add-segment": "新しい区切り",

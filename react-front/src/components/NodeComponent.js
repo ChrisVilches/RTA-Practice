@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import ActionsComponent from '../containers/ActionsComponent';
 import '../compiled/NodeComponent.css';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { Input, Form, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Button, Input, Form, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { translate } from 'react-i18next';
-import Global from '../Global';
 import * as NodeComponentContainer from '../containers/NodeComponent';
 import classNames from 'classnames';
 
@@ -15,12 +14,11 @@ class NodeComponent extends React.Component {
     super();
 
     this.state = {
-      newParentSegmentName: '',
+      modal: false,
       loadingTurningIntoSingles: false,
       newNodeNameInput: '',
-      saveTimeout: null,
-      savedMessageTimeout: null,
-      dropdownOpen: false
+      dropdownOpen: false,
+      editingName: false
     };
 
     this.actionsComponent = React.createRef();
@@ -30,8 +28,9 @@ class NodeComponent extends React.Component {
     this.onChangeNewNodeNameInput = this.onChangeNewNodeNameInput.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
     this.removeThisNode = this.removeThisNode.bind(this);
-    this.dispatchSaveTimeout = this.dispatchSaveTimeout.bind(this);
     this.dropdownToggle = this.dropdownToggle.bind(this);
+    this.renameNode = this.renameNode.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
   }
 
   get gameId(){
@@ -42,25 +41,20 @@ class NodeComponent extends React.Component {
     return this.props.tree.game;
   }
 
+  toggleModal(){
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
+
+  renameNode(){
+    this.toggleModal();
+  }
+
   dropdownToggle() {
     this.setState(prevState => ({
       dropdownOpen: !prevState.dropdownOpen
     }));
-  }
-
-  dispatchSaveTimeout(){
-
-    clearTimeout(this.state.savedMessageTimeout);
-
-    if(this.state.saveTimeout !== null){
-      clearTimeout(this.state.saveTimeout);
-    }
-
-    this.setState({
-      savedMessageTimeout: null,
-      saveTimeout: setTimeout(this.modifyNode, Global.saveDelayTime)
-    });
-
   }
 
   removeThisNode(){
@@ -69,25 +63,12 @@ class NodeComponent extends React.Component {
 
 
   modifyNode(){
-
-    clearTimeout(this.state.saveTimeout);
-    this.setState({
-      saveTimeout: null
-    });
-
     let newNode = this.state.node;
     newNode.name = this.state.newNodeNameInput;
-    this.props.modifyNode(this.state.node.nodeId, newNode, function(){
-
-      this.setState({
-        savedMessageTimeout: setTimeout(function(){
-          this.setState({
-            savedMessageTimeout: null
-          });
-        }.bind(this), 1500)
-      });
-
-    }.bind(this));
+    this.props.modifyNode(this.state.node.nodeId, newNode);
+    this.setState({
+      editingName: false
+    });
   }
 
   onChangeNewNodeNameInput(ev){
@@ -95,8 +76,6 @@ class NodeComponent extends React.Component {
     this.setState({
       newNodeNameInput: ev.target.value
     });
-
-    this.dispatchSaveTimeout();
   }
 
   onClickTurnSingleActions(ev){
@@ -162,20 +141,49 @@ class NodeComponent extends React.Component {
 
     let hasFolders = node.hasOwnProperty('children') && node.children[0].hasOwnProperty('children');
 
+    let dropDownMenu = <Dropdown size="sm" isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle} style={{display:'inline'}}>
+      <DropdownToggle className="node-toolbar-btn" color="link"><FontAwesomeIcon icon='ellipsis-v'/></DropdownToggle>
+      <DropdownMenu>
+        <DropdownItem onClick={this.removeThisNode}>{t("remove-node")}</DropdownItem>
+
+        {hasFolders?
+          <DropdownItem onClick={() => { this.props.addNewChildSegment(this.game.children, this.gameId, this.state.node.nodeId) }}>{t("add-segment")}</DropdownItem> :
+          <DropdownItem onClick={this.actionsComponent.addNewAction}>{t("add-action")}</DropdownItem>
+        }
+        {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>{t("make-everything-into-leaf")}</DropdownItem> : ''}
+        {!hasFolders? <DropdownItem onClick={this.actionsComponent.turnAllIntoFolders}>{t("make-everything-into-folder")}</DropdownItem> : ''}
+
+      </DropdownMenu>
+    </Dropdown>;
+
     return <div>
 
-      <div className='bullet' onClick={() => { this.toggleExpanded(node) }}>
+      <div className='bullet'>
 
-        <span>{node.name || <i>{t("default")}</i>}</span>
+        {dropDownMenu}
 
-        <div className='bullet-arrow-icon'>
+        {this.state.editingName?
+          <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} style={{ display:'inline' }}>
+            <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} onBlur={this.modifyNode} autoFocus/>
+          </Form>
+          :
+          <span onClick={()=>{ this.setState({ editingName: true }) }}>{node.name || <i>{t("default")}</i>}</span>
+
+        }
+
+
+
+        <Button className='node-toolbar-btn margin-left-btn' color="link" onClick={() => { this.toggleExpanded(node) }}>
         {(node.hasOwnProperty('children') && node.children.length > 0)? (node.expanded? <FontAwesomeIcon icon='chevron-down'/> : <FontAwesomeIcon icon='chevron-right'/>) : ''}
-        </div>
+        </Button>
+
       </div>
 
-      {this.props.tree.editable && this.state.node.expanded?
+
+
+      {/*this.props.tree.editable && this.state.node.expanded?
         <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
-          <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} className="margin-right"/>
+          <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} onBlur={this.modifyNode} className="margin-right"/>
 
 
           <Dropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle}>
@@ -193,11 +201,7 @@ class NodeComponent extends React.Component {
             </DropdownMenu>
           </Dropdown>
 
-          {this.state.saveTimeout === null? '' : <FontAwesomeIcon icon='spinner' spin/>}
-          {this.state.savedMessageTimeout === null? '' : <span><FontAwesomeIcon icon='check'/></span>}
-
-
-        </Form> : '' }
+        </Form> : '' */}
 
 
 
@@ -206,9 +210,13 @@ class NodeComponent extends React.Component {
 
         <div className={classNames({ 'collapsed': !node.expanded })}>
 
+
+
           {hasFolders?
 
-            <ul className='segment-list'>{node.children.map(function(n, i){
+            <ul className='segment-list'>
+
+              {node.children.map(function(n, i){
 
               return <NodeComponentContainer.default
                 node={n}
@@ -228,6 +236,7 @@ class NodeComponent extends React.Component {
             :
 
             <ul className='segment-list'>
+
               <li className='actions-container'>
                 <ActionsComponent
                   actions={node}
@@ -243,6 +252,20 @@ class NodeComponent extends React.Component {
         </div> : ''
 
       }
+
+      {/*<Modal isOpen={this.state.modal} toggle={this.toggleModal}>
+        <ModalHeader toggle={this.toggleModal}>{t("rename-node")}</ModalHeader>
+        <ModalBody>
+          <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
+            <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} className="margin-right"/>
+          </Form>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button color="primary" onClick={() => { this.modifyNode(); this.toggleModal(); }}>{t("modal-accept")}</Button>{' '}
+          <Button color="secondary" onClick={this.toggleModal}>{t("modal-cancel")}</Button>
+        </ModalFooter>
+      </Modal>*/}
 
     </div>;
 

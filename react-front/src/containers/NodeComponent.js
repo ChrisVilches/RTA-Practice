@@ -9,7 +9,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 
   return {
-    addNewChildSegment: (segments, nodeId, callback) => { dispatch(nodeActions.addNewChildSegment(segments, nodeId, callback)) }
+    addNewChildSegment: (segments, nodeId, name, callback) => { dispatch(nodeActions.addNewChildSegment(segments, nodeId, name, callback)) }
   };
 }
 
