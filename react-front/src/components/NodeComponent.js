@@ -178,6 +178,7 @@ class NodeComponent extends React.Component {
 
         {dropDownMenu}
 
+
         <span className='node-toolbar-btn' color="" {...this.props.dragProperties}><FontAwesomeIcon icon='arrows-alt'/></span>
 
 

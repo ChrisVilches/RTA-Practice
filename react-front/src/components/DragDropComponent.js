@@ -10,7 +10,7 @@ class DragDropComponent extends React.Component {
     this.onDragEnd = this.onDragEnd.bind(this);
   }
 
-  onDragEnd(result) {
+  onDragEnd(result, a) {
 
     let reorder = (list, startIndex, endIndex) => {
       let result = Array.from(list);
@@ -21,17 +21,19 @@ class DragDropComponent extends React.Component {
     };
 
     // dropped outside the list
-    if (!result.destination) {
+    if(!result.destination){
       return;
     }
 
-    let data = reorder(
+    /*let data = reorder(
       this.props.data,
       result.source.index,
       result.destination.index
-    );
+    );*/
 
-    let newSegments = tree.updateNode(this.props.tree.game.children, data[0].nodeId, (node, parent) => {
+    console.log(result)
+
+    /*let newSegments = tree.updateNode(this.props.tree.game.children, data[0].nodeId, (node, parent) => {
       if(parent === null){
         this.props.updateTreeData(data, this.props.tree.gameId);
         return;
@@ -39,50 +41,34 @@ class DragDropComponent extends React.Component {
 
       parent.children = data;
       this.props.updateTreeData(data, this.props.tree.gameId);
-    });
+    });*/
 
   }
 
 
   render(){
 
+    let content = <Droppable droppableId={`${this.props.parentId}`} type={`type-${this.props.parentId}`}>
+      {(provided, snapshot) => (
+      <div ref={provided.innerRef}>
+
+        {this.props.data.map((node, index) => (
+          <Draggable key={node.nodeId} draggableId={node.nodeId} index={index} type={`type-${this.props.parentId}`}>
+            {(provided, snapshot) => this.props.children(provided, snapshot, node, index)}
+          </Draggable>
+
+        ))}
+        {provided.placeholder}
+      </div>)}
+    </Droppable>;
+
+
+
     if(this.props.parentId === -1){
-      return <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId={`droppable${this.props.parentId}`}>
-          {(provided, snapshot) => (
-            <div ref={provided.innerRef}>
-
-              {this.props.data.map((node, index) => (
-
-                <Draggable key={node.nodeId} draggableId={node.nodeId} index={index}>
-                  {(provided, snapshot) => this.props.children(provided, snapshot, node, index)}
-
-                </Draggable>
-
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>;
+      return <DragDropContext onDragEnd={this.onDragEnd}>{content}</DragDropContext>;
     }
 
-    return <Droppable droppableId={`droppable${this.props.parentId}`}>
-        {(provided, snapshot) => (
-          <div ref={provided.innerRef}>
-
-            {this.props.data.map((node, index) => (
-
-              <Draggable key={node.nodeId} draggableId={node.nodeId} index={index}>
-                {(provided, snapshot) => this.props.children(provided, snapshot, node, index)}
-
-              </Draggable>
-
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>;
+    return content;
 
   }
 }
