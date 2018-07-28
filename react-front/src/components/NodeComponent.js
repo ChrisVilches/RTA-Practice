@@ -26,13 +26,20 @@ class NodeComponent extends React.Component {
     this.actionsComponent = React.createRef();
 
     this.toggleExpanded = this.toggleExpanded.bind(this);
-    this.addNewChildSegment = this.addNewChildSegment.bind(this);
     this.onClickTurnSingleActions = this.onClickTurnSingleActions.bind(this);
     this.onChangeNewNodeNameInput = this.onChangeNewNodeNameInput.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
     this.removeThisNode = this.removeThisNode.bind(this);
     this.dispatchSaveTimeout = this.dispatchSaveTimeout.bind(this);
     this.dropdownToggle = this.dropdownToggle.bind(this);
+  }
+
+  get gameId(){
+    return this.game._id;
+  }
+
+  get game(){
+    return this.props.tree.game;
   }
 
   dropdownToggle() {
@@ -57,14 +64,9 @@ class NodeComponent extends React.Component {
   }
 
   removeThisNode(){
-    let newNode = this.state.node;
-    newNode.removeFlag = true;
-    this.props.modifyNode(this.state.node.nodeId, newNode);
+    this.props.removeNode(this.state.node.nodeId);
   }
 
-  addNewChildSegment(){
-    this.props.addNewChildSegment(this.state.node.nodeId);
-  }
 
   modifyNode(){
 
@@ -182,7 +184,7 @@ class NodeComponent extends React.Component {
               <DropdownItem onClick={this.removeThisNode}>{t("remove-node")}</DropdownItem>
 
               {hasFolders?
-                <DropdownItem onClick={this.addNewChildSegment}>{t("add-segment")}</DropdownItem> :
+                <DropdownItem onClick={() => { this.props.addNewChildSegment(this.game.children, this.gameId, this.state.node.nodeId) }}>{t("add-segment")}</DropdownItem> :
                 <DropdownItem onClick={this.actionsComponent.addNewAction}>{t("add-action")}</DropdownItem>
               }
               {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>{t("make-everything-into-leaf")}</DropdownItem> : ''}
@@ -213,10 +215,10 @@ class NodeComponent extends React.Component {
                 key={i}
                 lastChild={node.children.length === i+1 }
                 segmentQuantity={this.state.node.children.length}
-                addNewChildSegment={this.props.addNewChildSegment}
                 setScore={this.props.setScore}
                 saveActions={this.props.saveActions}
                 modifyNode={this.props.modifyNode}
+                removeNode={this.props.removeNode}
                 t={this.props.t}
                 />
             }.bind(this)
@@ -249,12 +251,12 @@ class NodeComponent extends React.Component {
 
 
 NodeComponent.propTypes = {
-  addNewChildSegment: PropTypes.func.isRequired,
   setScore: PropTypes.func.isRequired,
   saveActions: PropTypes.func.isRequired,
   node: PropTypes.object.isRequired,
   lastChild: PropTypes.bool.isRequired,
-  modifyNode: PropTypes.func.isRequired
+  modifyNode: PropTypes.func.isRequired,
+  removeNode: PropTypes.func.isRequired
 };
 
 

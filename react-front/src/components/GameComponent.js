@@ -12,6 +12,8 @@ import { translate } from 'react-i18next';
 import '../compiled/GameComponent.css';
 import classNames from 'classnames';
 
+import * as tree from '../tree';
+
 
 class GameComponent extends Component {
   constructor(){
@@ -19,15 +21,22 @@ class GameComponent extends Component {
 
     this.authService = new AuthService();
 
-    this.state = { game: null, isOpen: false, modal: false, startDate: new Date() };
+    this.state = { isOpen: false, modal: false };
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
-    this.updateTreeData = this.updateTreeData.bind(this);
     this.setScore = this.setScore.bind(this);
     this.saveActions = this.saveActions.bind(this);
-    this.addNewChildSegment = this.addNewChildSegment.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
+    this.removeNode = this.removeNode.bind(this);
     this.loadGame = this.loadGame.bind(this);
+  }
+
+  get gameId(){
+    return this.props.match.params.gameId;
+  }
+
+  get game(){
+    return this.props.tree.game;
   }
 
   toggleModal() {
@@ -38,120 +47,41 @@ class GameComponent extends Component {
 
   modifyNode(nodeId, newNode, callback = ()=>{}){
 
-    let segments = this.props.tree.game.children;
+    let segments = this.game.children;
 
-    if(newNode.hasOwnProperty('removeFlag')){
-      segments = GameComponent.removeNode(segments, nodeId);
-    }
-    else {
-      GameComponent.findNodeUpdate(segments, nodeId, function(node){
-        Object.keys(newNode).map(function(key){
-          node[key] = newNode[key];
-          return null;
-        });
+    segments = tree.findNodeUpdate(segments, nodeId, function(node){
+      Object.keys(newNode).map(function(key){
+        node[key] = newNode[key];
+        return null;
       });
-    }
+    });
 
+    this.props.updateTreeData(segments, this.gameId, callback);
+  }
 
-    this.updateTreeData(segments, callback);
+  removeNode(nodeId, callback = ()=>{}){
+    let segments = this.game.children;
+    segments = tree.removeNode(segments, nodeId);
+    this.props.updateTreeData(segments, this.gameId, callback);
   }
 
 
   saveActions(nodeId, newActionNodes, callback = () => {}){
 
-    let treeTemp = this.props.tree.game.children;
+    let treeTemp = this.game.children;
 
-    GameComponent.findNodeUpdate(treeTemp, nodeId, function(n){
+    treeTemp = tree.findNodeUpdate(treeTemp, nodeId, function(n){
       n.children = newActionNodes;
     });
 
-    this.updateTreeData(treeTemp, callback);
+    this.props.updateTreeData(treeTemp, this.gameId, callback);
 
   }
-
-
-  static removeNode(parentSegments, nodeId){
-
-    for(let i=0; i < parentSegments.length; i++){
-      if(parentSegments[i].nodeId === nodeId){
-        parentSegments.splice(i, 1);
-        return parentSegments;
-      }
-    }
-
-    GameComponent.findNodeUpdate(parentSegments, nodeId, function(node, parent){
-      let index = -1;
-      for(let i=0; i < parent.children.length; i++){
-        if(nodeId === parent.children[i].nodeId){
-          index = i;
-          break;
-        }
-      }
-      if(index !== -1){
-        parent.children.splice(index, 1);
-      }
-    });
-    return parentSegments;
-  }
-
-
-  static traversal(node, func, parent = null) {
-    func(node, parent);
-    if(node.hasOwnProperty('children')){
-      for(let i=0; i < node.children.length; i++){
-        GameComponent.traversal(node.children[i], func, node);
-      }
-    }
-  };
-
-  static traverseAllNodes(parentSegments, func){
-    for(let i=0; i < parentSegments.length; i++){
-      GameComponent.traversal(parentSegments[i], func);
-    }
-  }
-
-  static findNode(parentSegments, nodeId){
-    let node = null;
-    GameComponent.traverseAllNodes(parentSegments, function(x){
-      if(x.nodeId === nodeId){
-        node = x;
-      }
-    });
-    return node;
-  }
-
-  static findNodeUpdate(parentSegments, nodeId, updateFunction){
-    GameComponent.traverseAllNodes(parentSegments, function(node, parent){
-      if(node.nodeId === nodeId){
-        updateFunction(node, parent);
-      }
-    });
-  }
-
-
-  addNewChildSegment(nodeId, callback = ()=>{}){
-
-    let segments = this.state.game.children;
-    if(nodeId === -1){
-      segments.push({ name: '' });
-      this.updateTreeData(segments, callback);
-      return;
-    }
-
-    GameComponent.findNodeUpdate(segments, nodeId, function(node, parent){
-      node.children.push({
-        name: ''
-      });
-    });
-
-    this.updateTreeData(segments, callback);
-  }
-
 
 
   setScore(scores, nodeId, actionCallback){
 
-    let node = GameComponent.findNode(this.state.game.children, nodeId);
+    let node = tree.findNode(this.game.children, nodeId);
 
     for(let i=0; i < node.children.length; i++){
 
@@ -164,35 +94,18 @@ class GameComponent extends Component {
       }
     }
 
-    this.updateTreeData(this.state.game.children, actionCallback);
+    this.props.updateTreeData(this.game.children, this.gameId, actionCallback);
 
   }
 
-  updateTreeData(treeData, actionCallback = () => {}){
 
-    this.authService.fetch('/games/' + this.state.game._id, {
-      method: 'PUT',
-      body: JSON.stringify({
-        children: treeData
-      })
-    })
-    .then(function(response){
-
-      this.setState({ game: response }, actionCallback);
-
-    }.bind(this))
-    .catch(function(err){
-      console.log(err);
-    });
-
-  }
 
   loadGame(){
-    let gameId = this.props.match.params.gameId;
-    this.props.fetchGame(gameId, function(){
 
-      let image = this.props.tree.game.backgroundImage;
-      let title = this.props.tree.game.name;
+    this.props.fetchGame(this.gameId, function(){
+
+      let image = this.game.backgroundImage;
+      let title = this.game.name;
 
       if(image){
         document.body.style.backgroundImage = 'url(' + image + ')';
@@ -205,8 +118,7 @@ class GameComponent extends Component {
 
 
   componentDidUpdate(prevProps, prevState, snapshot){
-    let gameId = this.props.match.params.gameId;
-    if(prevProps.match.params.gameId === gameId) return;
+    if(prevProps.match.params.gameId === this.gameId) return;
     this.loadGame();
   }
 
@@ -243,8 +155,8 @@ class GameComponent extends Component {
       <Row>
         <Col>
 
-          <h1>{ this.props.tree.game.name }</h1>
-          <p className="created-at-by">{t("created-at-by", { date: this.props.tree.startDate, author: this.props.tree.game.owner.username })}</p>
+          <h1>{ this.game.name }</h1>
+          <p className="created-at-by">{t("created-at-by", { date: this.props.tree.startDate, author: this.game.owner.username })}</p>
 
           <div className='toolbar'>
             <Button onClick={() => { this.props.setExpansionAll(false) }}><FontAwesomeIcon icon='folder'/> {t("game-collapse")}</Button>
@@ -255,22 +167,22 @@ class GameComponent extends Component {
           </div>
 
           {
-            this.props.tree.game.children.map(function(n, i){
+            this.game.children.map(function(n, i){
               return <NodeComponent
                 node={n}
                 key={i}
                 modifyNode={this.modifyNode}
+                removeNode={this.removeNode}
                 setScore={this.setScore}
                 saveActions={this.saveActions}
-                lastChild={this.props.tree.game.children.length === i+1}
-                segmentQuantity={this.props.tree.game.children.length}
-                addNewChildSegment={this.addNewChildSegment}
+                lastChild={this.game.children.length === i+1}
+                segmentQuantity={this.game.children.length}
                 />;
 
             }.bind(this))
           }
 
-          {this.props.tree.editable? <Button onClick={()=>{ this.addNewChildSegment(-1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
+          {this.props.tree.editable? <Button onClick={()=>{ this.props.addNewChildSegment(this.game.children, this.gameId, -1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
 
         </Col>
 

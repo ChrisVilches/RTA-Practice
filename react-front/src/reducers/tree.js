@@ -1,10 +1,11 @@
-import { REQUEST_GAME, RECEIVE_GAME, TOGGLE_EDITABLE, SET_EXPANSION } from '../actions/GameComponent';
+import { REQUEST_GAME, RECEIVE_GAME, TOGGLE_EDITABLE, SET_EXPANSION, UPDATE_TREE_FINISHED, UPDATE_TREE_LOADING } from '../actions/GameComponent';
 
 const initialState = {
   editable: false,
   game: null,
   startDate: null,
-  isFetchingGame: true
+  isFetchingGame: true,
+  isUpdatingTreeData: false
 };
 
 function traversal(node, func, parent = null) {
@@ -26,6 +27,12 @@ function traverseAllNodes(parentSegments, func){
 
 let treeData = function(state = initialState, action) {
   switch(action.type) {
+
+  case UPDATE_TREE_LOADING:
+    return { ...state, isUpdatingTreeData: true };
+
+  case UPDATE_TREE_FINISHED:
+    return { ...state, game: action.tree, isUpdatingTreeData: false };
 
   case TOGGLE_EDITABLE:
     return { ...state, editable: !state.editable };

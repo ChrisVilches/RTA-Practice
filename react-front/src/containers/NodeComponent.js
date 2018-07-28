@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-//import * as actions from '../actions/GameComponent';
+import * as nodeActions from '../actions/NodeComponent';
 import NodeComponent from '../components/NodeComponent';
 
 const mapStateToProps = state => {
@@ -9,7 +9,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 
   return {
-
+    addNewChildSegment: (segments, nodeId, callback) => { dispatch(nodeActions.addNewChildSegment(segments, nodeId, callback)) }
   };
 }
 
