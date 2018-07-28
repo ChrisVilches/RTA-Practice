@@ -198,47 +198,18 @@ class NodeComponent extends React.Component {
       </div>
 
 
-
-      {/*this.props.tree.editable && this.state.node.expanded?
-        <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
-          <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} onBlur={this.modifyNode} className="margin-right"/>
-
-
-          <Dropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle}>
-            <DropdownToggle caret></DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={this.removeThisNode}>{t("remove-node")}</DropdownItem>
-
-              {hasFolders?
-                <DropdownItem onClick={() => { this.props.addNewChildSegment(this.game.children, this.gameId, this.state.node.nodeId) }}>{t("add-segment")}</DropdownItem> :
-                <DropdownItem onClick={this.actionsComponent.addNewAction}>{t("add-action")}</DropdownItem>
-              }
-              {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>{t("make-everything-into-leaf")}</DropdownItem> : ''}
-              {!hasFolders? <DropdownItem onClick={this.actionsComponent.turnAllIntoFolders}>{t("make-everything-into-folder")}</DropdownItem> : ''}
-
-            </DropdownMenu>
-          </Dropdown>
-
-        </Form> : '' */}
-
-
-
       {
         node.hasOwnProperty('children')?
 
         <div className={classNames({ 'collapsed': !node.expanded })}>
 
-
-
           {hasFolders?
 
             <ul className='segment-list'>
-
-
+              
               <DragDropComponent
                 data={node.children}
-                parentId={node.nodeId}
-                updateTreeData={this.props.updateTreeData}>{(provided, snapshot, n, i) => (
+                parentId={node.nodeId}>{(provided, snapshot, n, i) => (
                   <div ref={provided.innerRef} {...provided.draggableProps}>
 
                     <NodeComponentContainer.default
@@ -253,27 +224,10 @@ class NodeComponent extends React.Component {
                       removeNode={this.props.removeNode}
                       t={this.props.t}
                       />
-                </div>
+                    </div>
                 )}</DragDropComponent>
 
-
-
-              {/*node.children.map(function(n, i){
-
-              return <NodeComponentContainer.default
-                node={n}
-                key={i}
-                parentId={node.nodeId}
-                lastChild={node.children.length === i+1 }
-                setScore={this.props.setScore}
-                saveActions={this.props.saveActions}
-                modifyNode={this.props.modifyNode}
-                removeNode={this.props.removeNode}
-                t={this.props.t}
-                />
-            }.bind(this)
-            )
-            */}</ul>
+              </ul>
 
             :
 
@@ -282,7 +236,7 @@ class NodeComponent extends React.Component {
               <li className='actions-container'>
                 <ActionsComponent
                   actions={node}
-                  nodeId={node.nodeId}
+                  parentId={node.nodeId}
                   saveActions={this.props.saveActions}
                   setScore={this.props.setScore}
                   onRef={a => this.actionsComponent = a}/>
@@ -295,19 +249,6 @@ class NodeComponent extends React.Component {
 
       }
 
-      {/*<Modal isOpen={this.state.modal} toggle={this.toggleModal}>
-        <ModalHeader toggle={this.toggleModal}>{t("rename-node")}</ModalHeader>
-        <ModalBody>
-          <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
-            <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} className="margin-right"/>
-          </Form>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button color="primary" onClick={() => { this.modifyNode(); this.toggleModal(); }}>{t("modal-accept")}</Button>{' '}
-          <Button color="secondary" onClick={this.toggleModal}>{t("modal-cancel")}</Button>
-        </ModalFooter>
-      </Modal>*/}
 
     </div>;
 

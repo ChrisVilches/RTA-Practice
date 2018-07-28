@@ -6,6 +6,7 @@ import '../compiled/ActionsComponent.css';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import { translate } from 'react-i18next';
+import DragDropComponent from '../containers/DragDropComponent';
 
 class ActionsComponent extends React.Component {
 
@@ -32,7 +33,6 @@ class ActionsComponent extends React.Component {
     this.onChangeActionName = this.onChangeActionName.bind(this);
     this.createDataArrays = this.createDataArrays.bind(this);
     this.deleteAction = this.deleteAction.bind(this);
-    this.renderNonEditable = this.renderNonEditable.bind(this);
     this.saveActions = this.saveActions.bind(this);
     this.moveUp = this.moveUp.bind(this);
     this.moveDown = this.moveDown.bind(this);
@@ -151,11 +151,6 @@ class ActionsComponent extends React.Component {
     let newNames = this.state.newNames;
     let actions = this.state.actions.children;
 
-    console.log("ACTIONS")
-    console.log(actions)
-    console.log("newnames")
-    console.log(newNames)
-
     for(let i=0; i < newNames.length; i++){
       let oldChild;
 
@@ -217,7 +212,7 @@ class ActionsComponent extends React.Component {
 
     this.setState({ uploadingScore: true });
 
-    this.props.setScore(this.state.scores, this.props.nodeId, function(){
+    this.props.setScore(this.state.scores, this.props.parentId, function(){
 
       this.setState({ uploadingScore: false });
       this.reset();
@@ -292,56 +287,61 @@ class ActionsComponent extends React.Component {
   }
 
 
-  renderNonEditable(){
+  render(){
 
     const { t } = this.props;
 
     return <div>
 
-      {this.state.actions.children.map(function(action, step){
 
-        return <div key={step} className='action-item'>
+      <DragDropComponent
+        data={this.state.actions.children}
+        parentId={this.props.parentId}>{(provided, snapshot, n, i) => (
 
-          {this.state.editing[step]?
+          <div key={i} className='action-item' ref={provided.innerRef} {...provided.draggableProps}>
 
-            <Form className="mt-2 mb-2" inline onSubmit={ev => { ev.preventDefault(); this.saveActions(); }}>
-              <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(step)}}><FontAwesomeIcon icon='times'/></Button>
-              <Input autoFocus ref={r => this.editNameInputRef = r } className='margin-right' value={this.state.newNames[step].name} onChange={(e) => {this.onChangeActionName(e, step)}} onBlur={()=>{setTimeout(this.saveActions.bind(this), 100)}}/>
+            {this.state.editing[i]?
 
-            </Form>
+              <Form className="mt-2 mb-2" inline onSubmit={ev => { ev.preventDefault(); this.saveActions(); }}>
+                <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(i)}}><FontAwesomeIcon icon='times'/></Button>
+                <Input autoFocus ref={r => this.editNameInputRef = r } className='margin-right' value={this.state.newNames[i].name} onChange={(e) => {this.onChangeActionName(e, i)}} onBlur={()=>{setTimeout(this.saveActions.bind(this), 100)}}/>
 
-            :
-            <span onClick={() => { this.startEditing(step) }}>
-            {action.name? action.name : <i>{t("default")}</i>}
-            </span>
-          }
+              </Form>
 
+              :
+              <span onClick={() => { this.startEditing(i) }}>
+              {n.name? n.name : <i>{t("default")}</i>}
+              </span>
+            }
 
+            <Row>
+              <Col md='6'>
+                <div className='button-bar'>
+                  {[0, 1, 2, 3, 4].map(function(num, index){
+                    return <Button
+                    className={classNames({
+                      'marked-score': this.state.scores[i] === num,
+                      'score-btn': true
+                    })}
+                    key={index} disabled={this.state.step < i || this.state.uploadingScore}
+                    onClick={ () => { this.setScore(i, index) }}>{ t(`score-${num}`) }</Button>;
+                  }.bind(this))}
 
-          <Row>
-            <Col md='6'>
-              <div className='button-bar'>
-              {[0, 1, 2, 3, 4].map(function(num, index){
-                return <Button
-                className={classNames({
-                  'marked-score': this.state.scores[step] === num,
-                  'score-btn': true
-                })}
-                key={index} disabled={this.state.step < step || this.state.uploadingScore}
-                onClick={ () => { this.setScore(step, index) }}>{ t(`score-${num}`) }</Button>;
-              }.bind(this))}
-              </div>
-            </Col>
+                  <span className='node-toolbar-btn visible-only-hover' color="" {...provided.dragHandleProps}><FontAwesomeIcon icon='arrows-alt'/></span>
 
-            <Col className='info' md='6'>
-              <span>{t("success-rate-total-times", { rate: this.state.consistencyRates[step], times: this.state.repsEachAction[step] })}</span>
-            </Col>
+                </div>
 
-          </Row>
+              </Col>
 
-        </div>
+              <Col className='info' md='6'>
+                <span>{t("success-rate-total-times", { rate: this.state.consistencyRates[i], times: this.state.repsEachAction[i] })}</span>
+              </Col>
 
-      }.bind(this))}
+            </Row>
+
+          </div>
+
+        )}</DragDropComponent>
 
       {this.state.step > 0?
         <div>
@@ -361,50 +361,13 @@ class ActionsComponent extends React.Component {
   }
 
 
-  /*renderEditable(){
-
-    return <div>
-
-      {this.state.newNames.map(function(action, step){
-
-        return <div key={step} className='action-item'>
-
-          <Form inline onSubmit={ev => { ev.preventDefault(); this.saveActions(); }}>
-            <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(step)}}><FontAwesomeIcon icon='times'/></Button>
-            <Input className='margin-right' value={action.name} onChange={(e) => {this.onChangeActionName(e, step)}} onBlur={this.saveActions}/>
-
-            {step > 0? <Button type='button' className='margin-right' color='secondary' onClick={() => {this.moveUp(step)}}><FontAwesomeIcon icon='arrow-up'/></Button> : ''}
-            {step < this.state.newNames.length-1? <Button className='margin-right' color='secondary' onClick={() => {this.moveDown(step)}}><FontAwesomeIcon icon='arrow-down'/></Button> : ''}
-
-          </Form>
-        </div>
-
-      }.bind(this))}
-
-
-    </div>;
-
-  }*/
-
-
-  render(){
-
-    return this.renderNonEditable();
-
-    /*if(!this.props.tree.editable){
-      return this.renderNonEditable();
-    }*/
-
-    // editable == true
-    //return this.renderEditable();
-  }
 
 }
 
 ActionsComponent.propTypes = {
   setScore: PropTypes.func.isRequired,
   actions: PropTypes.object.isRequired,
-  nodeId: PropTypes.number.isRequired,
+  parentId: PropTypes.number.isRequired,
   saveActions: PropTypes.func.isRequired
 };
 

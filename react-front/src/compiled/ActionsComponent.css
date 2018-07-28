@@ -18,6 +18,12 @@
   font-size: 0.8em;
   color: #777777; }
 
+.button-bar .visible-only-hover {
+  visibility: hidden; }
+
+.button-bar:hover .visible-only-hover {
+  visibility: visible; }
+
 .button-bar {
   white-space: nowrap; }
 

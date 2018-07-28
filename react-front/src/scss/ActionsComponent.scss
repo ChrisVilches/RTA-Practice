@@ -21,18 +21,27 @@
 .score-btn {
   margin-right: $button-margin-left;
   font-size: $small-font;
-
 }
 
 
 .info{
-
   span{
     display: block;
     font-size: $small-font;
     color: $light-font-color;
   }
+}
 
+
+.button-bar{
+  .visible-only-hover{
+    visibility: hidden;
+  }
+  &:hover{
+    .visible-only-hover{
+      visibility: visible;
+    }
+  }
 }
 
 .button-bar{

@@ -12,37 +12,31 @@ class DragDropComponent extends React.Component {
 
   onDragEnd(result, a) {
 
-    let reorder = (list, startIndex, endIndex) => {
-      let result = Array.from(list);
-      let [removed] = result.splice(startIndex, 1);
-      result.splice(endIndex, 0, removed);
-
-      return result;
-    };
-
     // dropped outside the list
     if(!result.destination){
       return;
     }
 
-    /*let data = reorder(
-      this.props.data,
-      result.source.index,
-      result.destination.index
-    );*/
+    let parent = Number(result.destination.droppableId);
+    let swapIndex1 = result.destination.index;
+    let swapIndex2 = result.source.index;
 
-    console.log(result)
+    let swap = function(array, i, j){
+      let [removed] = array.splice(j, 1);
+      array.splice(i, 0, removed);
+    }
 
-    /*let newSegments = tree.updateNode(this.props.tree.game.children, data[0].nodeId, (node, parent) => {
-      if(parent === null){
-        this.props.updateTreeData(data, this.props.tree.gameId);
-        return;
-      }
+    if(parent === -1){
+      swap(this.props.tree.game.children, swapIndex1, swapIndex2);
+      this.props.updateTreeData(this.props.tree.game.children, this.props.tree.gameId);
+      return;
+    }
 
-      parent.children = data;
-      this.props.updateTreeData(data, this.props.tree.gameId);
-    });*/
+    let newTree = tree.updateNode(this.props.tree.game.children, parent, node => {
+      swap(node.children, swapIndex1, swapIndex2);
+    });
 
+    this.props.updateTreeData(newTree, this.props.tree.gameId);
   }
 
 
