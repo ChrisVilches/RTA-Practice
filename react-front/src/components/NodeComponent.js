@@ -7,6 +7,7 @@ import { Button, Input, Form, Dropdown, DropdownToggle, DropdownMenu, DropdownIt
 import { translate } from 'react-i18next';
 import * as NodeComponentContainer from '../containers/NodeComponent';
 import classNames from 'classnames';
+import DragDropComponent from '../containers/DragDropComponent';
 
 class NodeComponent extends React.Component {
 
@@ -179,6 +180,7 @@ class NodeComponent extends React.Component {
 
         <span className='node-toolbar-btn' color="" {...this.props.dragProperties}><FontAwesomeIcon icon='arrows-alt'/></span>
 
+
         {this.state.editingName?
           <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} style={{ display:'inline' }}>
             <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} onBlur={this.modifyNode} autoFocus/>
@@ -187,8 +189,6 @@ class NodeComponent extends React.Component {
           <span onClick={()=>{ this.setState({ editingName: true }) }}>{node.name || <i>{t("default")}</i>}</span>
 
         }
-
-
 
         <Button className='node-toolbar-btn margin-left-btn' color="link" onClick={() => { this.toggleExpanded(node) }}>
         {(node.hasOwnProperty('children') && node.children.length > 0)? (node.expanded? <FontAwesomeIcon icon='chevron-down'/> : <FontAwesomeIcon icon='chevron-right'/>) : ''}
@@ -233,13 +233,37 @@ class NodeComponent extends React.Component {
 
             <ul className='segment-list'>
 
-              {node.children.map(function(n, i){
+
+              <DragDropComponent
+                data={node.children}
+                parentId={node.nodeId}
+                updateTreeData={this.props.updateTreeData}>{(provided, snapshot, n, i) => (
+                  <div ref={provided.innerRef} {...provided.draggableProps}>
+
+                    <NodeComponentContainer.default
+                      node={n}
+                      key={i}
+                      parentId={node.nodeId}
+                      lastChild={node.children.length === i+1 }
+                      setScore={this.props.setScore}
+                      dragProperties={provided.dragHandleProps}
+                      saveActions={this.props.saveActions}
+                      modifyNode={this.props.modifyNode}
+                      removeNode={this.props.removeNode}
+                      t={this.props.t}
+                      />
+                </div>
+                )}</DragDropComponent>
+
+
+
+              {/*node.children.map(function(n, i){
 
               return <NodeComponentContainer.default
                 node={n}
                 key={i}
+                parentId={node.nodeId}
                 lastChild={node.children.length === i+1 }
-                segmentQuantity={this.state.node.children.length}
                 setScore={this.props.setScore}
                 saveActions={this.props.saveActions}
                 modifyNode={this.props.modifyNode}
@@ -248,7 +272,7 @@ class NodeComponent extends React.Component {
                 />
             }.bind(this)
             )
-            }</ul>
+            */}</ul>
 
             :
 
@@ -292,6 +316,7 @@ class NodeComponent extends React.Component {
 
 NodeComponent.propTypes = {
   setScore: PropTypes.func.isRequired,
+  parentId: PropTypes.number.isRequired,
   saveActions: PropTypes.func.isRequired,
   node: PropTypes.object.isRequired,
   lastChild: PropTypes.bool.isRequired,

@@ -306,7 +306,7 @@ class ActionsComponent extends React.Component {
 
             <Form className="mt-2 mb-2" inline onSubmit={ev => { ev.preventDefault(); this.saveActions(); }}>
               <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(step)}}><FontAwesomeIcon icon='times'/></Button>
-              <Input autoFocus ref={r => this.editNameInputRef = r } className='margin-right' value={this.state.newNames[step].name} onChange={(e) => {this.onChangeActionName(e, step)}} onBlur={()=>{setTimeout(this.saveActions.bind(this), 50)}}/>
+              <Input autoFocus ref={r => this.editNameInputRef = r } className='margin-right' value={this.state.newNames[step].name} onChange={(e) => {this.onChangeActionName(e, step)}} onBlur={()=>{setTimeout(this.saveActions.bind(this), 100)}}/>
 
             </Form>
 

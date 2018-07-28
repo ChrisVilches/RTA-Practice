@@ -5,7 +5,8 @@ const initialState = {
   game: null,
   startDate: null,
   isFetchingGame: true,
-  isUpdatingTreeData: false
+  isUpdatingTreeData: false,
+  gameId: null
 };
 
 function traversal(node, func, parent = null) {
@@ -41,7 +42,7 @@ let treeData = function(state = initialState, action) {
     return { ...state, isFetchingGame: true };
 
   case RECEIVE_GAME:
-    return { ...state, game: action.game, isFetchingGame: false, startDate: (new Date(action.game.createdAt)).toLocaleDateString() };
+    return { ...state, game: action.game, gameId: action.game._id, isFetchingGame: false, startDate: (new Date(action.game.createdAt)).toLocaleDateString() };
 
   case SET_EXPANSION:
 

@@ -12,7 +12,8 @@ import { translate } from 'react-i18next';
 import '../compiled/GameComponent.css';
 
 import * as tree from '../tree';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+import DragDropComponent from '../containers/DragDropComponent';
 
 class GameComponent extends Component {
   constructor(){
@@ -30,7 +31,6 @@ class GameComponent extends Component {
     this.loadGame = this.loadGame.bind(this);
     this.onChangeNewNodeNameInput = this.onChangeNewNodeNameInput.bind(this);
     this.addNewNode = this.addNewNode.bind(this);
-    this.onDragEnd = this.onDragEnd.bind(this);
   }
 
   get gameId(){
@@ -68,7 +68,7 @@ class GameComponent extends Component {
 
     let segments = this.game.children;
 
-    segments = tree.findNodeUpdate(segments, nodeId, function(node){
+    segments = tree.updateNode(segments, nodeId, function(node){
       Object.keys(newNode).map(function(key){
         node[key] = newNode[key];
         return null;
@@ -89,7 +89,7 @@ class GameComponent extends Component {
 
     let treeTemp = this.game.children;
 
-    treeTemp = tree.findNodeUpdate(treeTemp, nodeId, function(n){
+    treeTemp = tree.updateNode(treeTemp, nodeId, function(n){
       n.children = newActionNodes;
     });
 
@@ -159,33 +159,6 @@ class GameComponent extends Component {
 
 
 
-
-  onDragEnd(result) {
-
-
-    let reorder = (list, startIndex, endIndex) => {
-      let result = Array.from(list);
-      let [removed] = result.splice(startIndex, 1);
-      result.splice(endIndex, 0, removed);
-
-      return result;
-    };
-
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
-
-    let data = reorder(
-      this.game.children,
-      result.source.index,
-      result.destination.index
-    );
-
-    this.props.updateTreeData(data, this.gameId);
-  }
-
-
   render() {
 
     const { t } = this.props;
@@ -213,57 +186,23 @@ class GameComponent extends Component {
 
           </div>
 
-          <DragDropContext onDragEnd={this.onDragEnd}>
-            <Droppable droppableId="droppable">
-              {(provided, snapshot) => (
-                <div ref={provided.innerRef}>
-                  {this.game.children.map((node, index) => (
+          <DragDropComponent
+            data={this.game.children}
+            parentId={-1}>{(provided, snapshot, node, index) => (
+              <div ref={provided.innerRef} {...provided.draggableProps}>
 
-                    <Draggable key={node.nodeId} draggableId={node.nodeId} index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          >
-
-
-                          {/*<span {...provided.dragHandleProps}>grab me</span>*/}
-                        <NodeComponent
-                          node={node}
-                          modifyNode={this.modifyNode}
-                          removeNode={this.removeNode}
-                          setScore={this.setScore}
-                          saveActions={this.saveActions}
-                          dragProperties={provided.dragHandleProps}
-                          lastChild={this.game.children.length === index+1}
-                          segmentQuantity={this.game.children.length}
-                          />
-                      </div>
-                      )}
-                    </Draggable>
-
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-
-          {/*
-            this.game.children.map(function(n, i){
-              return <NodeComponent
-                node={n}
-                key={i}
+              <NodeComponent
+                node={node}
                 modifyNode={this.modifyNode}
+                parentId={-1}
                 removeNode={this.removeNode}
                 setScore={this.setScore}
                 saveActions={this.saveActions}
-                lastChild={this.game.children.length === i+1}
-                segmentQuantity={this.game.children.length}
-                />;
+                dragProperties={provided.dragHandleProps}
+                lastChild={this.game.children.length === index+1}/>
+            </div>
+            )}</DragDropComponent>
 
-            }.bind(this))
-          */}
 
 
           {this.state.newNodeFormOpen?

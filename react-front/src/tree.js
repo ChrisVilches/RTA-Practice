@@ -25,7 +25,7 @@ export const findNode = function(parentSegments, nodeId){
   return node;
 }
 
-export const findNodeUpdate = function(_parentSegments, nodeId, updateFunction){
+export const updateNode = function(_parentSegments, nodeId, updateFunction){
   let parentSegments = _.cloneDeep(_parentSegments);
   traverseAllNodes(parentSegments, function(node, parent){
     if(node.nodeId === nodeId){
@@ -48,7 +48,7 @@ export const removeNode = function(_parentSegments, nodeId){
     }
   }
 
-  parentSegments = findNodeUpdate(parentSegments, nodeId, function(node, parent){
+  parentSegments = updateNode(parentSegments, nodeId, function(node, parent){
     let index = -1;
     for(let i=0; i < parent.children.length; i++){
       if(nodeId === parent.children[i].nodeId){
@@ -75,7 +75,7 @@ export const addNewChildSegment = function(_parentSegments, nodeId, name=''){
     return segments;
   }
 
-  segments = findNodeUpdate(segments, nodeId, function(node, parent){
+  segments = updateNode(segments, nodeId, function(node, parent){
     node.children.push({
       name
     });
