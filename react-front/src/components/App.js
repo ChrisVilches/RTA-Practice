@@ -221,7 +221,9 @@ class App extends Component {
             <Container className='container-navbar'>
 
               <Link className='top-link-page-name' to="/">{Global.appName}</Link>
-              <NavbarToggler onClick={this.toggle} className='navbar-toggler-btn' />
+              <NavbarToggler onClick={this.toggle} className='navbar-toggler-btn'>
+                <FontAwesomeIcon icon="ellipsis-v"></FontAwesomeIcon>
+              </NavbarToggler>
               <Collapse isOpen={this.state.isOpen} navbar>
 
 

@@ -41,8 +41,6 @@
   background-image: url(../img/tile.jpg);
   background-size: 20px 20px;
 
-
-
   font-size: 1em;
 
   a {
@@ -86,8 +84,9 @@
 }
 
 .navbar-toggler-btn{
-
+  color: $header-footer-font-color;
 }
+
 
 
 .loginFormInput{
