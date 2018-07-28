@@ -280,7 +280,6 @@ class ActionsComponent extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapshot){
 
-    // editableをtrueにした
     if(prevProps.tree.game.updatedAt !== this.props.tree.game.updatedAt){
       this.reset();
       this.createDataArrays();
@@ -313,7 +312,6 @@ class ActionsComponent extends React.Component {
 
             :
             <span onClick={() => { this.startEditing(step) }}>
-              {action.nodeId}
             {action.name? action.name : <i>{t("default")}</i>}
             </span>
           }

@@ -1,4 +1,4 @@
-import { REQUEST_GAME, RECEIVE_GAME, TOGGLE_EDITABLE, SET_EXPANSION, UPDATE_TREE_FINISHED, UPDATE_TREE_LOADING } from '../actions/GameComponent';
+import { REQUEST_GAME, RECEIVE_GAME, SET_EXPANSION, UPDATE_TREE_FINISHED, UPDATE_TREE_LOADING } from '../actions/GameComponent';
 
 const initialState = {
   editable: false,
@@ -33,9 +33,6 @@ let treeData = function(state = initialState, action) {
 
   case UPDATE_TREE_FINISHED:
     return { ...state, game: action.tree, isUpdatingTreeData: false };
-
-  case TOGGLE_EDITABLE:
-    return { ...state, editable: !state.editable };
 
   case REQUEST_GAME:
     return { ...state, isFetchingGame: true };

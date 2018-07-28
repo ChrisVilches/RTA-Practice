@@ -144,14 +144,29 @@ class NodeComponent extends React.Component {
     let dropDownMenu = <Dropdown size="sm" isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle} style={{display:'inline'}}>
       <DropdownToggle className="node-toolbar-btn" color="link"><FontAwesomeIcon icon='ellipsis-v'/></DropdownToggle>
       <DropdownMenu>
-        <DropdownItem onClick={this.removeThisNode}>{t("remove-node")}</DropdownItem>
+        <DropdownItem onClick={this.removeThisNode}>
+          <span className="dropdown-item-icon"><FontAwesomeIcon icon='times'/></span>
+          {t("remove-node")}
+        </DropdownItem>
 
         {hasFolders?
-          <DropdownItem onClick={() => { this.props.addNewChildSegment(this.game.children, this.gameId, this.state.node.nodeId) }}>{t("add-segment")}</DropdownItem> :
-          <DropdownItem onClick={this.actionsComponent.addNewAction}>{t("add-action")}</DropdownItem>
+          <DropdownItem onClick={() => { this.props.addNewChildSegment(this.game.children, this.gameId, this.state.node.nodeId) }}>
+            <span className="dropdown-item-icon"><FontAwesomeIcon icon='plus' className="dropdown-item-icon"/></span>
+            {t("add-segment")}
+            </DropdownItem> :
+          <DropdownItem onClick={this.actionsComponent.addNewAction}>
+            <span className="dropdown-item-icon"><FontAwesomeIcon icon='plus' className="dropdown-item-icon"/></span>
+            {t("add-action")}
+          </DropdownItem>
         }
-        {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>{t("make-everything-into-leaf")}</DropdownItem> : ''}
-        {!hasFolders? <DropdownItem onClick={this.actionsComponent.turnAllIntoFolders}>{t("make-everything-into-folder")}</DropdownItem> : ''}
+        {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>
+        <span className="dropdown-item-icon"><FontAwesomeIcon icon='leaf' className="dropdown-item-icon"/></span>
+        {t("make-everything-into-leaf")}
+        </DropdownItem> : ''}
+        {!hasFolders? <DropdownItem onClick={this.actionsComponent.turnAllIntoFolders}>
+        <span className="dropdown-item-icon"><FontAwesomeIcon icon='folder' className="dropdown-item-icon"/></span>
+        {t("make-everything-into-folder")}
+      </DropdownItem> : ''}
 
       </DropdownMenu>
     </Dropdown>;

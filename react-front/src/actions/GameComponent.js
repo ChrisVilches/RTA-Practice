@@ -2,18 +2,11 @@ import AuthService from '../AuthService';
 
 export const REQUEST_GAME = 'REQUEST_GAME';
 export const RECEIVE_GAME = 'RECEIVE_GAME';
-export const TOGGLE_EDITABLE = 'TOGGLE_EDITABLE';
 export const SET_EXPANSION = 'SET_EXPANSION';
 export const UPDATE_TREE_LOADING = 'UPDATE_TREE_LOADING';
 export const UPDATE_TREE_FINISHED = 'UPDATE_TREE_FINISHED';
 
 let authService = new AuthService();
-
-export function toggleEditable(){
-  return {
-    type: TOGGLE_EDITABLE
-  };
-}
 
 
 let requestGame = function(){

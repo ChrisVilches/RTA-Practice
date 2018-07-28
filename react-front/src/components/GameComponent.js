@@ -12,7 +12,7 @@ import { translate } from 'react-i18next';
 import '../compiled/GameComponent.css';
 
 import * as tree from '../tree';
-
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 class GameComponent extends Component {
   constructor(){
@@ -205,7 +205,7 @@ class GameComponent extends Component {
           {this.state.newNodeFormOpen?
 
             <Form inline onSubmit={ev => { ev.preventDefault(); this.addNewNode(); }}>
-              <Input autoFocus value={this.state.newNodeName} onChange={this.onChangeNewNodeNameInput}></Input>
+              <Input autoFocus value={this.state.newNodeName} onChange={this.onChangeNewNodeNameInput} onBlur={()=>{ if(this.state.newNodeName.length === 0){ this.setState({ newNodeFormOpen: false }) } }}></Input>
               <Button color="primary">{t("form-save")}</Button>
             </Form>
             :
@@ -233,5 +233,15 @@ class GameComponent extends Component {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 export default translate('translations')(GameComponent);
