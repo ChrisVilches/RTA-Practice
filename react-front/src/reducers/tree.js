@@ -1,4 +1,4 @@
-import { REQUEST_GAME, RECEIVE_GAME, TOGGLE_EDITABLE } from '../actions/GameComponent';
+import { REQUEST_GAME, RECEIVE_GAME, TOGGLE_EDITABLE, SET_EXPANSION } from '../actions/GameComponent';
 
 const initialState = {
   editable: false,
@@ -7,7 +7,24 @@ const initialState = {
   isFetchingGame: true
 };
 
-let scrapers = function(state = initialState, action) {
+function traversal(node, func, parent = null) {
+  func(node, parent);
+  if(node.hasOwnProperty('children')){
+    for(let i=0; i < node.children.length; i++){
+      traversal(node.children[i], func, node);
+    }
+  }
+};
+
+function traverseAllNodes(parentSegments, func){
+  for(let i=0; i < parentSegments.length; i++){
+    traversal(parentSegments[i], func);
+  }
+}
+
+
+
+let treeData = function(state = initialState, action) {
   switch(action.type) {
 
   case TOGGLE_EDITABLE:
@@ -19,9 +36,17 @@ let scrapers = function(state = initialState, action) {
   case RECEIVE_GAME:
     return { ...state, game: action.game, isFetchingGame: false, startDate: (new Date(action.game.createdAt)).toLocaleDateString() };
 
+  case SET_EXPANSION:
+
+    traverseAllNodes(state.game.children, function(x){
+      x.expanded = action.bool;
+    });
+
+    return { ...state };
+
   default:
     return state;
   }
 }
 
-export default scrapers;
+export default treeData;

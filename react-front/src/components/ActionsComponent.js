@@ -48,18 +48,18 @@ class ActionsComponent extends React.Component {
     let newState = {};
 
     // 何もしないで
-    if(prevState.latestUpdated === nextProps.tree.game.updatedAt){
+    if(prevState.updatedAt === nextProps.tree.game.updatedAt){
 
     } else {
 
       // 木構造が変更されたので、時間がかかる計算を再度行う。
 
-      console.log("成功率を計算")
+      console.log(`成功率を計算、${prevState.updatedAt}!=${nextProps.tree.game.updatedAt}`)
 
       let consistencyRates = ActionDataAnalyzer.getConsistencyRates(nextProps.actions);
       let repsEachAction = ActionDataAnalyzer.getRepsEachAction(nextProps.actions);
       newState['scores'] = new Array(nextProps.actions.children.length);
-      newState['latestUpdated'] = nextProps.tree.game.updatedAt;
+      newState['updatedAt'] = nextProps.tree.game.updatedAt;
       newState['consistencyRates'] = consistencyRates;
       newState['repsEachAction'] = repsEachAction;
       newState['actions'] = nextProps.actions;

@@ -7,7 +7,7 @@ import { Input, Form, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } fro
 import { translate } from 'react-i18next';
 import Global from '../Global';
 import * as NodeComponentContainer from '../containers/NodeComponent';
-
+import classNames from 'classnames';
 
 class NodeComponent extends React.Component {
 
@@ -115,16 +115,16 @@ class NodeComponent extends React.Component {
     let newState = {};
 
     // 何もしないで
-    if(prevState.latestUpdated === nextProps.tree.game.updatedAt){
-      console.log("同じ", prevState.latestUpdated, nextProps.tree.game.updatedAt);
+    if(prevState.updatedAt === nextProps.tree.game.updatedAt){
+      console.log("同じ", prevState.updatedAt, nextProps.tree.game.updatedAt);
 
     } else {
 
-      console.log("違う", prevState.latestUpdated, nextProps.tree.game.updatedAt);
+      console.log("違う", prevState.updatedAt, nextProps.tree.game.updatedAt);
 
       // 木構造が変更されたので、時間がかかる計算を再度行う。
 
-      newState['latestUpdated'] = nextProps.tree.game.updatedAt;
+      newState['updatedAt'] = nextProps.tree.game.updatedAt;
       newState['node'] = nextProps.node;
       newState['newNodeNameInput'] = nextProps.node.name;
     }
@@ -200,42 +200,45 @@ class NodeComponent extends React.Component {
 
 
       {
-        (node.expanded && node.hasOwnProperty('children'))?
+        node.hasOwnProperty('children')?
 
-        (hasFolders?
+        <div className={classNames({ 'collapsed': !node.expanded })}>
 
-          <ul className='segment-list'>{node.children.map(function(n, i){
+          {hasFolders?
 
-            return <NodeComponentContainer.default
-              node={n}
-              key={i}
-              lastChild={node.children.length === i+1 }
-              segmentQuantity={this.state.node.children.length}
-              updateTreeData={this.props.updateTreeData}
-              addNewChildSegment={this.props.addNewChildSegment}
-              setScore={this.props.setScore}
-              saveActions={this.props.saveActions}
-              modifyNode={this.props.modifyNode}
-              t={this.props.t}
-              />
-          }.bind(this)
-          )
-          }</ul>
+            <ul className='segment-list'>{node.children.map(function(n, i){
 
-          :
-
-          <ul className='segment-list'>
-            <li className='actions-container'>
-              <ActionsComponent
-                actions={node}
-                nodeId={node.nodeId}
-                saveActions={this.props.saveActions}
+              return <NodeComponentContainer.default
+                node={n}
+                key={i}
+                lastChild={node.children.length === i+1 }
+                segmentQuantity={this.state.node.children.length}
+                addNewChildSegment={this.props.addNewChildSegment}
                 setScore={this.props.setScore}
-                onRef={a => this.actionsComponent = a}/>
-            </li>
-          </ul>
+                saveActions={this.props.saveActions}
+                modifyNode={this.props.modifyNode}
+                t={this.props.t}
+                />
+            }.bind(this)
+            )
+            }</ul>
 
-        ) : ''
+            :
+
+            <ul className='segment-list'>
+              <li className='actions-container'>
+                <ActionsComponent
+                  actions={node}
+                  nodeId={node.nodeId}
+                  saveActions={this.props.saveActions}
+                  setScore={this.props.setScore}
+                  onRef={a => this.actionsComponent = a}/>
+              </li>
+            </ul>
+
+          }
+
+        </div> : ''
 
       }
 
@@ -246,7 +249,6 @@ class NodeComponent extends React.Component {
 
 
 NodeComponent.propTypes = {
-  updateTreeData: PropTypes.func.isRequired,
   addNewChildSegment: PropTypes.func.isRequired,
   setScore: PropTypes.func.isRequired,
   saveActions: PropTypes.func.isRequired,

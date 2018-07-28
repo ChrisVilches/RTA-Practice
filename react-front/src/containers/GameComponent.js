@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
 import * as actions from '../actions/GameComponent';
-import React, { Component } from 'react';
 import GameComponent from '../components/GameComponent';
 
 const mapStateToProps = state => {
@@ -11,7 +10,8 @@ const mapDispatchToProps = dispatch => {
 
   return {
     fetchGame: (gameId, callback) => { dispatch(actions.fetchGame(gameId, callback)) },
-    toggleEditable: () => { dispatch(actions.toggleEditable()) }
+    toggleEditable: () => { dispatch(actions.toggleEditable()) },
+    setExpansionAll: bool => { dispatch(actions.setExpansionAll(bool)) }
   };
 }
 

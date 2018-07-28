@@ -3,15 +3,13 @@ import AuthService from '../AuthService';
 export const REQUEST_GAME = 'REQUEST_IMAGES';
 export const RECEIVE_GAME = 'RECEIVE_IMAGES_RESULT';
 export const TOGGLE_EDITABLE = 'TOGGLE_EDITABLE';
-
+export const SET_EXPANSION = 'SET_EXPANSION';
 
 export function toggleEditable(){
   return {
     type: TOGGLE_EDITABLE
   };
 }
-
-
 
 
 let requestGame = function(){
@@ -25,6 +23,14 @@ let receiveGame = function(game){
     type: RECEIVE_GAME,
     game
   };
+}
+
+
+export const setExpansionAll = function(bool){
+  return {
+    type: SET_EXPANSION,
+    bool
+  }
 }
 
 
@@ -43,7 +49,7 @@ export const fetchGame = function(gameId, callback = ()=>{}){
       dispatch(receiveGame(res));
       callback();
 
-    }.bind(this))
+    })
     .catch(function(err){
       console.log(err);
     });

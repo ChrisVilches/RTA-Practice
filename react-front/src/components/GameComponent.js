@@ -26,7 +26,6 @@ class GameComponent extends Component {
     this.setScore = this.setScore.bind(this);
     this.saveActions = this.saveActions.bind(this);
     this.addNewChildSegment = this.addNewChildSegment.bind(this);
-    this.setExpansionAll = this.setExpansionAll.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
     this.loadGame = this.loadGame.bind(this);
   }
@@ -39,7 +38,7 @@ class GameComponent extends Component {
 
   modifyNode(nodeId, newNode, callback = ()=>{}){
 
-    let segments = this.state.game.children;
+    let segments = this.props.tree.game.children;
 
     if(newNode.hasOwnProperty('removeFlag')){
       segments = GameComponent.removeNode(segments, nodeId);
@@ -57,20 +56,10 @@ class GameComponent extends Component {
     this.updateTreeData(segments, callback);
   }
 
-  setExpansionAll(bool){
-
-    let game = this.state.game;
-
-    GameComponent.traverseAllNodes(game.children, function(x){
-      x.expanded = bool;
-    });
-
-    this.setState({ game });
-  }
 
   saveActions(nodeId, newActionNodes, callback = () => {}){
 
-    let treeTemp = this.state.game.children;
+    let treeTemp = this.props.tree.game.children;
 
     GameComponent.findNodeUpdate(treeTemp, nodeId, function(n){
       n.children = newActionNodes;
@@ -115,6 +104,12 @@ class GameComponent extends Component {
     }
   };
 
+  static traverseAllNodes(parentSegments, func){
+    for(let i=0; i < parentSegments.length; i++){
+      GameComponent.traversal(parentSegments[i], func);
+    }
+  }
+
   static findNode(parentSegments, nodeId){
     let node = null;
     GameComponent.traverseAllNodes(parentSegments, function(x){
@@ -133,11 +128,6 @@ class GameComponent extends Component {
     });
   }
 
-  static traverseAllNodes(parentSegments, func){
-    for(let i=0; i < parentSegments.length; i++){
-      GameComponent.traversal(parentSegments[i], func);
-    }
-  }
 
   addNewChildSegment(nodeId, callback = ()=>{}){
 
@@ -257,8 +247,8 @@ class GameComponent extends Component {
           <p className="created-at-by">{t("created-at-by", { date: this.props.tree.startDate, author: this.props.tree.game.owner.username })}</p>
 
           <div className='toolbar'>
-            <Button onClick={() => { this.setExpansionAll(false) }}><FontAwesomeIcon icon='folder'/> {t("game-collapse")}</Button>
-            <Button onClick={() => { this.setExpansionAll(true) }}><FontAwesomeIcon icon='folder-open'/> {t("game-expand")}</Button>
+            <Button onClick={() => { this.props.setExpansionAll(false) }}><FontAwesomeIcon icon='folder'/> {t("game-collapse")}</Button>
+            <Button onClick={() => { this.props.setExpansionAll(true) }}><FontAwesomeIcon icon='folder-open'/> {t("game-expand")}</Button>
             <Button onClick={this.toggleModal}><FontAwesomeIcon icon='chart-bar'/> {t("game-stats")}</Button>
 
             <Button onClick={this.props.toggleEditable} className={classNames({ 'btn-active': this.props.tree.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>
@@ -274,7 +264,6 @@ class GameComponent extends Component {
                 saveActions={this.saveActions}
                 lastChild={this.props.tree.game.children.length === i+1}
                 segmentQuantity={this.props.tree.game.children.length}
-                updateTreeData={this.updateTreeData}
                 addNewChildSegment={this.addNewChildSegment}
                 />;
 
