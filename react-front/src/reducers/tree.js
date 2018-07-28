@@ -29,7 +29,10 @@ let treeData = function(state = initialState, action) {
   switch(action.type) {
 
   case UPDATE_TREE_LOADING:
-    return { ...state, isUpdatingTreeData: true };
+    // これないとグリッチが発生する
+    let game = state.game;
+    game.children = action.tree;
+    return { ...state, game, isUpdatingTreeData: true };
 
   case UPDATE_TREE_FINISHED:
     return { ...state, game: action.tree, isUpdatingTreeData: false };

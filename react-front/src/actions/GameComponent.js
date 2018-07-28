@@ -30,9 +30,10 @@ export const setExpansionAll = function(bool){
   }
 }
 
-export const updateTree = function(){
+export const updateTree = function(tree){
   return {
-    type: UPDATE_TREE_LOADING
+    type: UPDATE_TREE_LOADING,
+    tree
   };
 }
 
@@ -48,7 +49,7 @@ export const updateTreeData = function(treeData, gameId, actionCallback = () => 
 
   return dispatch => {
 
-    dispatch(updateTree());
+    dispatch(updateTree(treeData));
 
     authService.fetch('/games/' + gameId, {
       method: 'PUT',

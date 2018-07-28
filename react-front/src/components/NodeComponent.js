@@ -16,7 +16,7 @@ class NodeComponent extends React.Component {
     this.state = {
       modal: false,
       loadingTurningIntoSingles: false,
-      newNodeNameInput: '',
+      newNodeNameInput: null,
       dropdownOpen: false,
       editingName: false
     };
@@ -141,7 +141,7 @@ class NodeComponent extends React.Component {
 
     let hasFolders = node.hasOwnProperty('children') && node.children[0].hasOwnProperty('children');
 
-    let dropDownMenu = <Dropdown size="sm" isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle} style={{display:'inline'}}>
+    let dropDownMenu = <Dropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle} style={{display:'inline'}}>
       <DropdownToggle className="node-toolbar-btn" color="link"><FontAwesomeIcon icon='ellipsis-v'/></DropdownToggle>
       <DropdownMenu>
         <DropdownItem onClick={this.removeThisNode}>
@@ -176,6 +176,8 @@ class NodeComponent extends React.Component {
       <div className='bullet'>
 
         {dropDownMenu}
+
+        <span className='node-toolbar-btn' color="" {...this.props.dragProperties}><FontAwesomeIcon icon='arrows-alt'/></span>
 
         {this.state.editingName?
           <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} style={{ display:'inline' }}>

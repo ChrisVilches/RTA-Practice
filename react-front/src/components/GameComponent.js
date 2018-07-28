@@ -20,7 +20,7 @@ class GameComponent extends Component {
 
     this.authService = new AuthService();
 
-    this.state = { isOpen: false, modal: false, newNodeFormOpen: false, newNodeName: '' };
+    this.state = { isOpen: false, modal: false, newNodeFormOpen: false, newNodeName: ''};
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.setScore = this.setScore.bind(this);
@@ -30,6 +30,7 @@ class GameComponent extends Component {
     this.loadGame = this.loadGame.bind(this);
     this.onChangeNewNodeNameInput = this.onChangeNewNodeNameInput.bind(this);
     this.addNewNode = this.addNewNode.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
   }
 
   get gameId(){
@@ -156,6 +157,35 @@ class GameComponent extends Component {
     });
   }
 
+
+
+
+  onDragEnd(result) {
+
+
+    let reorder = (list, startIndex, endIndex) => {
+      let result = Array.from(list);
+      let [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+
+      return result;
+    };
+
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    let data = reorder(
+      this.game.children,
+      result.source.index,
+      result.destination.index
+    );
+
+    this.props.updateTreeData(data, this.gameId);
+  }
+
+
   render() {
 
     const { t } = this.props;
@@ -181,10 +211,45 @@ class GameComponent extends Component {
             <Button onClick={() => { this.props.setExpansionAll(true) }}><FontAwesomeIcon icon='folder-open'/> {t("game-expand")}</Button>
             <Button onClick={this.toggleModal}><FontAwesomeIcon icon='chart-bar'/> {t("game-stats")}</Button>
 
-            {/*<Button onClick={this.props.toggleEditable} className={classNames({ 'btn-active': this.props.tree.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>*/}
           </div>
 
-          {
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <div ref={provided.innerRef}>
+                  {this.game.children.map((node, index) => (
+
+                    <Draggable key={node.nodeId} draggableId={node.nodeId} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          >
+
+
+                          {/*<span {...provided.dragHandleProps}>grab me</span>*/}
+                        <NodeComponent
+                          node={node}
+                          modifyNode={this.modifyNode}
+                          removeNode={this.removeNode}
+                          setScore={this.setScore}
+                          saveActions={this.saveActions}
+                          dragProperties={provided.dragHandleProps}
+                          lastChild={this.game.children.length === index+1}
+                          segmentQuantity={this.game.children.length}
+                          />
+                      </div>
+                      )}
+                    </Draggable>
+
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+
+          {/*
             this.game.children.map(function(n, i){
               return <NodeComponent
                 node={n}
@@ -198,21 +263,18 @@ class GameComponent extends Component {
                 />;
 
             }.bind(this))
-          }
+          */}
 
-          {/*this.props.tree.editable? <Button onClick={()=>{ this.props.addNewChildSegment(this.game.children, this.gameId, -1) }}><FontAwesomeIcon icon='plus'/></Button> : ''*/}
 
           {this.state.newNodeFormOpen?
 
             <Form inline onSubmit={ev => { ev.preventDefault(); this.addNewNode(); }}>
-              <Input autoFocus value={this.state.newNodeName} onChange={this.onChangeNewNodeNameInput} onBlur={()=>{ if(this.state.newNodeName.length === 0){ this.setState({ newNodeFormOpen: false }) } }}></Input>
+              <Input autoFocus placeholder={t("create-enter-name")} value={this.state.newNodeName} onChange={this.onChangeNewNodeNameInput} onBlur={()=>{ if(this.state.newNodeName.length === 0){ this.setState({ newNodeFormOpen: false }) } }}></Input>
               <Button color="primary">{t("form-save")}</Button>
             </Form>
             :
             <Button onClick={()=>{ this.setState({ newNodeFormOpen: true }) }}><FontAwesomeIcon icon='plus'/></Button>
           }
-
-
 
         </Col>
 
@@ -233,14 +295,6 @@ class GameComponent extends Component {
     );
   }
 }
-
-
-
-
-
-
-
-
 
 
 

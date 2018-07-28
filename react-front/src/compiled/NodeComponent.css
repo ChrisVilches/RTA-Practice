@@ -9,17 +9,18 @@
   background-color: #f4f4f4; }
 
 .margin-left-btn {
-  margin-left: 5px; }
+  margin-left: 10px; }
 
 .dropdown-item-icon {
   width: 25px;
   display: inline-block; }
 
 .node-toolbar-btn {
-  margin-right: 5px;
+  margin-right: 3px;
   display: inline;
-  padding: 10px 15px;
-  color: #ababab; }
+  padding: 10px 4px;
+  color: #ababab;
+  font-size: 15px; }
   .node-toolbar-btn:hover {
     color: #ababab; }
 
