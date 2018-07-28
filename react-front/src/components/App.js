@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import GameComponent from './GameComponent';
+import GameComponent from '../containers/GameComponent';
 import HomeComponent from './HomeComponent';
 import DashboardComponent from './DashboardComponent';
 import NotFoundComponent from './NotFoundComponent';
@@ -9,9 +9,8 @@ import { Switch, Route, Link } from 'react-router-dom';
 
 import { Container, Button, Input } from 'reactstrap';
 
-import Global from './Global';
-
-import AuthService from './AuthService';
+import Global from '../Global';
+import AuthService from '../AuthService';
 
 import {
   Collapse,
@@ -26,7 +25,7 @@ import { ModalBody, Modal, ModalHeader, ModalFooter } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import '@fortawesome/fontawesome-free-solid'
 
-import './compiled/App.css';
+import '../compiled/App.css';
 
 import { withRouter } from 'react-router-dom'
 

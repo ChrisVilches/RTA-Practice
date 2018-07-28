@@ -7,7 +7,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
 import { translate } from 'react-i18next';
 
-import './compiled/DashboardComponent.css';
+import '../compiled/DashboardComponent.css';
 
 import GameListComponent from './dashboard/GameListComponent';
 import SettingsComponent from './dashboard/SettingsComponent';

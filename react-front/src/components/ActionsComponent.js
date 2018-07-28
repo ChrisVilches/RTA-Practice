@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ActionDataAnalyzer from './ActionDataAnalyzer';
+import ActionDataAnalyzer from '../ActionDataAnalyzer';
 import { Button, Tooltip, Col, Row, Input, Form } from 'reactstrap';
-import './compiled/ActionsComponent.css';
+import '../compiled/ActionsComponent.css';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import { translate } from 'react-i18next';
-import Global from './Global';
+import Global from '../Global';
 
 class ActionsComponent extends React.Component {
 
@@ -21,7 +21,6 @@ class ActionsComponent extends React.Component {
       consistencyRates: [],
       repsEachAction: [],
       latestUpdated: null,
-      editable: false,
       newNames: [],
       saveTimeout: null,
       savedMessageTimeout: null
@@ -48,9 +47,6 @@ class ActionsComponent extends React.Component {
   static getDerivedStateFromProps(nextProps, prevState){
 
     let newState = {};
-
-    newState['editable'] = nextProps.editable;
-
 
     // 何もしないで
     if(prevState.latestUpdated === nextProps.latestUpdated){
@@ -292,7 +288,7 @@ class ActionsComponent extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot){
 
     // editableをtrueにした
-    if(!prevState.editable && this.state.editable){
+    if(!prevProps.tree.editable && this.props.tree.editable){
       this.reset();
       this.createTempNamesArray();
     }
@@ -391,7 +387,7 @@ class ActionsComponent extends React.Component {
 
   render(){
 
-    if(!this.state.editable){
+    if(!this.props.tree.editable){
       return this.renderNonEditable();
     }
 
@@ -406,7 +402,6 @@ ActionsComponent.propTypes = {
   actions: PropTypes.object.isRequired,
   nodeId: PropTypes.number.isRequired,
   latestUpdated: PropTypes.string.isRequired,
-  editable: PropTypes.bool.isRequired,
   saveActions: PropTypes.func.isRequired
 };
 

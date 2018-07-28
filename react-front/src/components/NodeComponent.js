@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ActionsComponent from './ActionsComponent';
-import './compiled/NodeComponent.css';
+import ActionsComponent from '../containers/ActionsComponent';
+import '../compiled/NodeComponent.css';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { Input, Form, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { translate } from 'react-i18next';
-import Global from './Global';
+import Global from '../Global';
+import * as NodeComponentContainer from '../containers/NodeComponent';
+
 
 class NodeComponent extends React.Component {
 
@@ -14,7 +16,6 @@ class NodeComponent extends React.Component {
 
     this.state = {
       latestUpdated: null,
-      editable: false,
       newParentSegmentName: '',
       loadingTurningIntoSingles: false,
       newNodeNameInput: '',
@@ -114,8 +115,6 @@ class NodeComponent extends React.Component {
 
     let newState = {};
 
-    newState['editable'] = nextProps.editable;
-
     // 何もしないで
     if(prevState.latestUpdated === nextProps.latestUpdated){
       console.log("同じ", prevState.latestUpdated, nextProps.latestUpdated);
@@ -173,7 +172,7 @@ class NodeComponent extends React.Component {
         </div>
       </div>
 
-      {this.state.editable && this.state.node.expanded?
+      {this.props.tree.editable && this.state.node.expanded?
         <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
           <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} className="margin-right"/>
 
@@ -208,14 +207,13 @@ class NodeComponent extends React.Component {
 
           <ul className='segment-list'>{node.children.map(function(n, i){
 
-            return <NodeComponent
+            return <NodeComponentContainer.default
               node={n}
               key={i}
               lastChild={node.children.length === i+1 }
               segmentQuantity={this.state.node.children.length}
               updateTreeData={this.props.updateTreeData}
               latestUpdated={this.state.latestUpdated}
-              editable={this.state.editable}
               addNewChildSegment={this.props.addNewChildSegment}
               setScore={this.props.setScore}
               saveActions={this.props.saveActions}
@@ -236,7 +234,6 @@ class NodeComponent extends React.Component {
                 latestUpdated={this.state.latestUpdated}
                 saveActions={this.props.saveActions}
                 setScore={this.props.setScore}
-                editable={this.state.editable}
                 onRef={a => this.actionsComponent = a}/>
             </li>
           </ul>
@@ -258,7 +255,6 @@ NodeComponent.propTypes = {
   saveActions: PropTypes.func.isRequired,
   node: PropTypes.object.isRequired,
   latestUpdated: PropTypes.string.isRequired,
-  editable: PropTypes.bool.isRequired,
   lastChild: PropTypes.bool.isRequired,
   modifyNode: PropTypes.func.isRequired
 };

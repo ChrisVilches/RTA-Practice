@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 
-import bkImage from'./img/bk.png';
-import marioImage from'./img/mario.png';
+import bkImage from'../img/bk.png';
+import marioImage from'../img/mario.png';
 
 import { Row, Col } from 'reactstrap';
 
-import AuthService from './AuthService';
+import AuthService from '../AuthService';
 
 import { translate } from 'react-i18next';
 
-import './compiled/HomeComponent.css';
+import '../compiled/HomeComponent.css';
 
 class HomeComponent extends Component {
   constructor(){

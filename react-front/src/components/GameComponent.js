@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import NodeComponent from './NodeComponent';
+import NodeComponent from '../containers/NodeComponent';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
-import Global from './Global';
-import AuthService from './AuthService';
+import Global from '../Global';
+import AuthService from '../AuthService';
 
 import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { translate } from 'react-i18next';
 
-import './compiled/GameComponent.css';
+import '../compiled/GameComponent.css';
 import classNames from 'classnames';
 
 
@@ -19,12 +19,11 @@ class GameComponent extends Component {
 
     this.authService = new AuthService();
 
-    this.state = { game: null, isOpen: false, modal: false, startDate: new Date(), editable: false };
+    this.state = { game: null, isOpen: false, modal: false, startDate: new Date() };
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.updateTreeData = this.updateTreeData.bind(this);
     this.fetchGame = this.fetchGame.bind(this);
-    this.changeEditMode = this.changeEditMode.bind(this);
     this.setScore = this.setScore.bind(this);
     this.saveActions = this.saveActions.bind(this);
     this.addNewChildSegment = this.addNewChildSegment.bind(this);
@@ -56,12 +55,6 @@ class GameComponent extends Component {
 
 
     this.updateTreeData(segments, callback);
-  }
-
-  changeEditMode(){
-    this.setState({
-      editable: !this.state.editable
-    });
   }
 
   setExpansionAll(bool){
@@ -215,7 +208,10 @@ class GameComponent extends Component {
       let image = res.backgroundImage;
       let title = res.name;
 
-      this.setState({ game: res, startDate: (new Date(res.createdAt)).toLocaleDateString() });
+      this.setState({
+        game: res,
+        startDate: (new Date(res.createdAt)).toLocaleDateString()
+      });
 
       if(image){
         document.body.style.backgroundImage = 'url(' + image + ')';
@@ -286,7 +282,7 @@ class GameComponent extends Component {
             <Button onClick={() => { this.setExpansionAll(true) }}><FontAwesomeIcon icon='folder-open'/> {t("game-expand")}</Button>
             <Button onClick={this.toggleModal}><FontAwesomeIcon icon='chart-bar'/> {t("game-stats")}</Button>
 
-            <Button onClick={this.changeEditMode} className={classNames({ 'btn-active': this.state.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>
+            <Button onClick={this.props.toggleEditable} className={classNames({ 'btn-active': this.props.tree.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>
           </div>
 
           {
@@ -308,7 +304,7 @@ class GameComponent extends Component {
             }.bind(this))
           }
 
-          {this.state.editable? <Button onClick={()=>{ this.addNewChildSegment(-1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
+          {this.props.tree.editable? <Button onClick={()=>{ this.addNewChildSegment(-1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
 
         </Col>
 

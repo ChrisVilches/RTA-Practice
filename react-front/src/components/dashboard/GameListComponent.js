@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Row, Col, Container } from 'reactstrap';
 
-import AuthService from '../AuthService';
+import AuthService from '../../AuthService';
 
 class GameListComponent extends Component {
 
