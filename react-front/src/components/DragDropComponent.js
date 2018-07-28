@@ -47,7 +47,7 @@ class DragDropComponent extends React.Component {
       <div ref={provided.innerRef}>
 
         {this.props.data.map((node, index) => (
-          <Draggable key={node.nodeId} draggableId={node.nodeId} index={index} type={`type-${this.props.parentId}`}>
+          <Draggable key={index} draggableId={node.nodeId} index={index} type={`type-${this.props.parentId}`}>
             {(provided, snapshot) => this.props.children(provided, snapshot, node, index)}
           </Draggable>
 

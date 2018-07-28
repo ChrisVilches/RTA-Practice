@@ -206,15 +206,14 @@ class NodeComponent extends React.Component {
           {hasFolders?
 
             <ul className='segment-list'>
-              
+
               <DragDropComponent
                 data={node.children}
                 parentId={node.nodeId}>{(provided, snapshot, n, i) => (
-                  <div ref={provided.innerRef} {...provided.draggableProps}>
+                  <div key={i} ref={provided.innerRef} {...provided.draggableProps}>
 
                     <NodeComponentContainer.default
                       node={n}
-                      key={i}
                       parentId={node.nodeId}
                       lastChild={node.children.length === i+1 }
                       setScore={this.props.setScore}

@@ -188,8 +188,8 @@ class GameComponent extends Component {
 
           <DragDropComponent
             data={this.game.children}
-            parentId={-1}>{(provided, snapshot, node, index) => (
-              <div ref={provided.innerRef} {...provided.draggableProps}>
+            parentId={-1}>{(provided, snapshot, node, i) => (
+              <div key={i} ref={provided.innerRef} {...provided.draggableProps}>
 
               <NodeComponent
                 node={node}
@@ -199,7 +199,7 @@ class GameComponent extends Component {
                 setScore={this.setScore}
                 saveActions={this.saveActions}
                 dragProperties={provided.dragHandleProps}
-                lastChild={this.game.children.length === index+1}/>
+                lastChild={this.game.children.length === i+1}/>
             </div>
             )}</DragDropComponent>
 
