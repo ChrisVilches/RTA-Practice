@@ -20,7 +20,6 @@ class ActionsComponent extends React.Component {
       tooltipOpen: false,
       consistencyRates: [],
       repsEachAction: [],
-      latestUpdated: null,
       newNames: [],
       saveTimeout: null,
       savedMessageTimeout: null
@@ -49,7 +48,7 @@ class ActionsComponent extends React.Component {
     let newState = {};
 
     // 何もしないで
-    if(prevState.latestUpdated === nextProps.latestUpdated){
+    if(prevState.latestUpdated === nextProps.tree.game.updatedAt){
 
     } else {
 
@@ -60,7 +59,7 @@ class ActionsComponent extends React.Component {
       let consistencyRates = ActionDataAnalyzer.getConsistencyRates(nextProps.actions);
       let repsEachAction = ActionDataAnalyzer.getRepsEachAction(nextProps.actions);
       newState['scores'] = new Array(nextProps.actions.children.length);
-      newState['latestUpdated'] = nextProps.latestUpdated;
+      newState['latestUpdated'] = nextProps.tree.game.updatedAt;
       newState['consistencyRates'] = consistencyRates;
       newState['repsEachAction'] = repsEachAction;
       newState['actions'] = nextProps.actions;
@@ -401,7 +400,6 @@ ActionsComponent.propTypes = {
   setScore: PropTypes.func.isRequired,
   actions: PropTypes.object.isRequired,
   nodeId: PropTypes.number.isRequired,
-  latestUpdated: PropTypes.string.isRequired,
   saveActions: PropTypes.func.isRequired
 };
 

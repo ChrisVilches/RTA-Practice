@@ -1,11 +1,9 @@
-export const REQUEST_IMAGES = 'REQUEST_IMAGES';
-export const RECEIVE_IMAGES_RESULT = 'RECEIVE_IMAGES_RESULT';
-export const INVALIDATE_URL = 'INVALIDATE_URL';
+import AuthService from '../AuthService';
 
-export const REQUEST_SCRAPERS = 'REQUEST_SCRAPERS';
-export const REQUEST_SCRAPERS_RESULT = 'REQUEST_SCRAPERS_RESULT';
-
+export const REQUEST_GAME = 'REQUEST_IMAGES';
+export const RECEIVE_GAME = 'RECEIVE_IMAGES_RESULT';
 export const TOGGLE_EDITABLE = 'TOGGLE_EDITABLE';
+
 
 export function toggleEditable(){
   return {
@@ -14,72 +12,43 @@ export function toggleEditable(){
 }
 
 
-let requestImages = function(){
+
+
+let requestGame = function(){
   return {
-    type: REQUEST_IMAGES
+    type: REQUEST_GAME
   };
 }
 
-let receiveImagesResult = function(images){
+let receiveGame = function(game){
   return {
-    type: RECEIVE_IMAGES_RESULT,
-    images
-  };
-}
-
-let invalidateUrl = function(){
-  return {
-    type: INVALIDATE_URL
-  };
-}
-
-let requestScrapers = function(){
-  return {
-    type: REQUEST_SCRAPERS
-  };
-}
-
-let receiveScrapersResult = function(scrapers){
-  return {
-    type: REQUEST_SCRAPERS_RESULT,
-    scrapers
+    type: RECEIVE_GAME,
+    game
   };
 }
 
 
-export const fetchImages = function(url){
+export const fetchGame = function(gameId, callback = ()=>{}){
 
   return dispatch => {
 
-    dispatch(requestImages());
+    console.log("Fetch game");
+    dispatch(requestGame());
 
-    fetch("http://localhost:3000/?url=" + url)
-    .then(data => {
-      if(data.status === 400) throw new Error();
-      return data.json();
-    })
-    .then(data => {
-      dispatch(receiveImagesResult(data));
-    })
-    .catch(err => {
-      dispatch(invalidateUrl());
+    let authService = new AuthService();
+
+    authService.fetch('/games/' + gameId)
+    .then(function(res){
+
+      dispatch(receiveGame(res));
+      callback();
+
+    }.bind(this))
+    .catch(function(err){
+      console.log(err);
     });
-  };
-}
 
-
-export const fetchScrapers = function(){
-
-  return dispatch => {
-
-    dispatch(requestScrapers());
-
-    fetch("http://localhost:3000/active_scrapers")
-    .then(data => data.json())
-    .then(data => {
-      dispatch(receiveScrapersResult(data.scrapers));
-    })
-    .catch(console.log);
 
   };
+
 }

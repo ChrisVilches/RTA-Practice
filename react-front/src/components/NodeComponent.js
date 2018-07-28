@@ -15,7 +15,6 @@ class NodeComponent extends React.Component {
     super();
 
     this.state = {
-      latestUpdated: null,
       newParentSegmentName: '',
       loadingTurningIntoSingles: false,
       newNodeNameInput: '',
@@ -116,16 +115,16 @@ class NodeComponent extends React.Component {
     let newState = {};
 
     // 何もしないで
-    if(prevState.latestUpdated === nextProps.latestUpdated){
-      console.log("同じ", prevState.latestUpdated, nextProps.latestUpdated);
+    if(prevState.latestUpdated === nextProps.tree.game.updatedAt){
+      console.log("同じ", prevState.latestUpdated, nextProps.tree.game.updatedAt);
 
     } else {
 
-      console.log("違う", prevState.latestUpdated, nextProps.latestUpdated);
+      console.log("違う", prevState.latestUpdated, nextProps.tree.game.updatedAt);
 
       // 木構造が変更されたので、時間がかかる計算を再度行う。
 
-      newState['latestUpdated'] = nextProps.latestUpdated;
+      newState['latestUpdated'] = nextProps.tree.game.updatedAt;
       newState['node'] = nextProps.node;
       newState['newNodeNameInput'] = nextProps.node.name;
     }
@@ -213,7 +212,6 @@ class NodeComponent extends React.Component {
               lastChild={node.children.length === i+1 }
               segmentQuantity={this.state.node.children.length}
               updateTreeData={this.props.updateTreeData}
-              latestUpdated={this.state.latestUpdated}
               addNewChildSegment={this.props.addNewChildSegment}
               setScore={this.props.setScore}
               saveActions={this.props.saveActions}
@@ -231,7 +229,6 @@ class NodeComponent extends React.Component {
               <ActionsComponent
                 actions={node}
                 nodeId={node.nodeId}
-                latestUpdated={this.state.latestUpdated}
                 saveActions={this.props.saveActions}
                 setScore={this.props.setScore}
                 onRef={a => this.actionsComponent = a}/>
@@ -254,7 +251,6 @@ NodeComponent.propTypes = {
   setScore: PropTypes.func.isRequired,
   saveActions: PropTypes.func.isRequired,
   node: PropTypes.object.isRequired,
-  latestUpdated: PropTypes.string.isRequired,
   lastChild: PropTypes.bool.isRequired,
   modifyNode: PropTypes.func.isRequired
 };

@@ -10,8 +10,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 
   return {
-    fetchImages: url => { dispatch(actions.fetchImages(url)) },
-    fetchScrapers: () => { dispatch(actions.fetchScrapers()) },
+    fetchGame: (gameId, callback) => { dispatch(actions.fetchGame(gameId, callback)) },
     toggleEditable: () => { dispatch(actions.toggleEditable()) }
   };
 }

@@ -23,12 +23,12 @@ class GameComponent extends Component {
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.updateTreeData = this.updateTreeData.bind(this);
-    this.fetchGame = this.fetchGame.bind(this);
     this.setScore = this.setScore.bind(this);
     this.saveActions = this.saveActions.bind(this);
     this.addNewChildSegment = this.addNewChildSegment.bind(this);
     this.setExpansionAll = this.setExpansionAll.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
+    this.loadGame = this.loadGame.bind(this);
   }
 
   toggleModal() {
@@ -197,52 +197,31 @@ class GameComponent extends Component {
 
   }
 
+  loadGame(){
+    let gameId = this.props.match.params.gameId;
+    this.props.fetchGame(gameId, function(){
 
-
-  fetchGame(){
-    console.log("Fetch game");
-    let gameId = this.state.gameId;
-
-    this.authService.fetch('/games/' + gameId)
-    .then(function(res){
-      let image = res.backgroundImage;
-      let title = res.name;
-
-      this.setState({
-        game: res,
-        startDate: (new Date(res.createdAt)).toLocaleDateString()
-      });
+      let image = this.props.tree.game.backgroundImage;
+      let title = this.props.tree.game.name;
 
       if(image){
         document.body.style.backgroundImage = 'url(' + image + ')';
       }
 
       document.title = `${title} | ${Global.appName}`;
-    }.bind(this))
-    .catch(function(err){
-      console.log(err);
-    });
-
+    }.bind(this));
   }
 
+
+
   componentDidUpdate(prevProps, prevState, snapshot){
-
     let gameId = this.props.match.params.gameId;
-
     if(prevProps.match.params.gameId === gameId) return;
-
-    this.setState({
-      gameId: gameId
-    }, this.fetchGame);
-
+    this.loadGame();
   }
 
   componentDidMount(){
-    let gameId = this.props.match.params.gameId;
-
-    this.setState({
-      gameId: gameId
-    }, this.fetchGame);
+    this.loadGame();
   }
 
   componentWillUnmount(){
@@ -261,7 +240,7 @@ class GameComponent extends Component {
 
     const { t } = this.props;
 
-    if(this.state.game == null){
+    if(this.props.tree.isFetchingGame === true){
       return (
         <Col>
           <FontAwesomeIcon icon='spinner' spin/>
@@ -274,8 +253,8 @@ class GameComponent extends Component {
       <Row>
         <Col>
 
-          <h1>{ this.state.game.name }</h1>
-          <p className="created-at-by">{t("created-at-by", { date: this.state.startDate, author: this.state.game.owner.username })}</p>
+          <h1>{ this.props.tree.game.name }</h1>
+          <p className="created-at-by">{t("created-at-by", { date: this.props.tree.startDate, author: this.props.tree.game.owner.username })}</p>
 
           <div className='toolbar'>
             <Button onClick={() => { this.setExpansionAll(false) }}><FontAwesomeIcon icon='folder'/> {t("game-collapse")}</Button>
@@ -286,19 +265,17 @@ class GameComponent extends Component {
           </div>
 
           {
-            this.state.game.children.map(function(n, i){
+            this.props.tree.game.children.map(function(n, i){
               return <NodeComponent
                 node={n}
                 key={i}
                 modifyNode={this.modifyNode}
                 setScore={this.setScore}
                 saveActions={this.saveActions}
-                lastChild={this.state.game.children.length === i+1}
-                segmentQuantity={this.state.game.children.length}
+                lastChild={this.props.tree.game.children.length === i+1}
+                segmentQuantity={this.props.tree.game.children.length}
                 updateTreeData={this.updateTreeData}
-                latestUpdated={this.state.game.updatedAt}
                 addNewChildSegment={this.addNewChildSegment}
-                editable={this.state.editable}
                 />;
 
             }.bind(this))
