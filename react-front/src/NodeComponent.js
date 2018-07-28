@@ -164,84 +164,86 @@ class NodeComponent extends React.Component {
 
     return <div>
 
-    <div className='bullet' onClick={() => { this.toggleExpanded(node) }}>
+      <div className='bullet' onClick={() => { this.toggleExpanded(node) }}>
 
-      <span>{node.name || <i>{t("default")}</i>}</span>
+        <span>{node.name || <i>{t("default")}</i>}</span>
 
-      <div className='bullet-arrow-icon'>
-      {(node.hasOwnProperty('children') && node.children.length > 0)? (node.expanded? <FontAwesomeIcon icon='chevron-down'/> : <FontAwesomeIcon icon='chevron-right'/>) : ''}
+        <div className='bullet-arrow-icon'>
+        {(node.hasOwnProperty('children') && node.children.length > 0)? (node.expanded? <FontAwesomeIcon icon='chevron-down'/> : <FontAwesomeIcon icon='chevron-right'/>) : ''}
+        </div>
       </div>
-    </div>
 
-    {this.state.editable && this.state.node.expanded?
-      <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
-        <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} className="margin-right"/>
-
-        {this.state.saveTimeout === null? '' : <FontAwesomeIcon icon='spinner' spin/>}
-        {this.state.savedMessageTimeout === null? '' : <span><FontAwesomeIcon icon='check'/></span>}
-
-        <Dropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle}>
-          <DropdownToggle caret></DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem onClick={this.removeThisNode}>{t("remove-node")}</DropdownItem>
-
-            {hasFolders?
-              <DropdownItem onClick={this.addNewChildSegment}>{t("add-segment")}</DropdownItem> :
-              <DropdownItem onClick={this.actionsComponent.addNewAction}>{t("add-action")}</DropdownItem>
-            }
-            {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>{t("make-everything-into-leaf")}</DropdownItem> : ''}
-            {!hasFolders? <DropdownItem onClick={this.actionsComponent.turnAllIntoFolders}>{t("make-everything-into-folder")}</DropdownItem> : ''}
-
-          </DropdownMenu>
-        </Dropdown>
-
-      </Form> : '' }
+      {this.state.editable && this.state.node.expanded?
+        <Form inline onSubmit={(ev) => { ev.preventDefault(); this.modifyNode(); }} className="mt-2 mb-2">
+          <Input placeholder={t("enter-new-name")} value={this.state.newNodeNameInput} onChange={this.onChangeNewNodeNameInput} className="margin-right"/>
 
 
+          <Dropdown isOpen={this.state.dropdownOpen} toggle={this.dropdownToggle}>
+            <DropdownToggle caret></DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={this.removeThisNode}>{t("remove-node")}</DropdownItem>
 
-    {
-      (node.expanded && node.hasOwnProperty('children'))?
+              {hasFolders?
+                <DropdownItem onClick={this.addNewChildSegment}>{t("add-segment")}</DropdownItem> :
+                <DropdownItem onClick={this.actionsComponent.addNewAction}>{t("add-action")}</DropdownItem>
+              }
+              {canConvertToLeafs? <DropdownItem onClick={this.onClickTurnSingleActions}>{t("make-everything-into-leaf")}</DropdownItem> : ''}
+              {!hasFolders? <DropdownItem onClick={this.actionsComponent.turnAllIntoFolders}>{t("make-everything-into-folder")}</DropdownItem> : ''}
 
-      (hasFolders?
+            </DropdownMenu>
+          </Dropdown>
 
-        <ul className='segment-list'>{node.children.map(function(n, i){
+          {this.state.saveTimeout === null? '' : <FontAwesomeIcon icon='spinner' spin/>}
+          {this.state.savedMessageTimeout === null? '' : <span><FontAwesomeIcon icon='check'/></span>}
 
-          return <NodeComponent
-            node={n}
-            key={i}
-            lastChild={node.children.length === i+1 }
-            segmentQuantity={this.state.node.children.length}
-            updateTreeData={this.props.updateTreeData}
-            latestUpdated={this.state.latestUpdated}
-            editable={this.state.editable}
-            addNewChildSegment={this.props.addNewChildSegment}
-            setScore={this.props.setScore}
-            saveActions={this.props.saveActions}
-            modifyNode={this.props.modifyNode}
-            t={this.props.t}
-            />
-        }.bind(this)
-        )
-        }</ul>
 
-        :
+        </Form> : '' }
 
-        <ul className='segment-list'>
-          <li className='actions-container'>
-            <ActionsComponent
-              actions={node}
-              nodeId={node.nodeId}
+
+
+      {
+        (node.expanded && node.hasOwnProperty('children'))?
+
+        (hasFolders?
+
+          <ul className='segment-list'>{node.children.map(function(n, i){
+
+            return <NodeComponent
+              node={n}
+              key={i}
+              lastChild={node.children.length === i+1 }
+              segmentQuantity={this.state.node.children.length}
+              updateTreeData={this.props.updateTreeData}
               latestUpdated={this.state.latestUpdated}
-              saveActions={this.props.saveActions}
-              setScore={this.props.setScore}
               editable={this.state.editable}
-              onRef={a => this.actionsComponent = a}/>
-          </li>
-        </ul>
+              addNewChildSegment={this.props.addNewChildSegment}
+              setScore={this.props.setScore}
+              saveActions={this.props.saveActions}
+              modifyNode={this.props.modifyNode}
+              t={this.props.t}
+              />
+          }.bind(this)
+          )
+          }</ul>
 
-      ) : ''
+          :
 
-    }
+          <ul className='segment-list'>
+            <li className='actions-container'>
+              <ActionsComponent
+                actions={node}
+                nodeId={node.nodeId}
+                latestUpdated={this.state.latestUpdated}
+                saveActions={this.props.saveActions}
+                setScore={this.props.setScore}
+                editable={this.state.editable}
+                onRef={a => this.actionsComponent = a}/>
+            </li>
+          </ul>
+
+        ) : ''
+
+      }
 
     </div>;
 

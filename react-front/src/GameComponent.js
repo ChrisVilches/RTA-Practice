@@ -12,6 +12,7 @@ import { translate } from 'react-i18next';
 import './compiled/GameComponent.css';
 import classNames from 'classnames';
 
+
 class GameComponent extends Component {
   constructor(){
     super();
@@ -273,58 +274,57 @@ class GameComponent extends Component {
     }
 
     return (
-      <div>
-        <Row>
-          <Col>
 
-            <h1>{ this.state.game.name }</h1>
-            <p className="created-at-by">{t("created-at-by", { date: this.state.startDate, author: this.state.game.owner.username })}</p>
+      <Row>
+        <Col>
 
-            <div className='toolbar'>
-              <Button onClick={() => { this.setExpansionAll(false) }}><FontAwesomeIcon icon='folder'/> {t("game-collapse")}</Button>
-              <Button onClick={() => { this.setExpansionAll(true) }}><FontAwesomeIcon icon='folder-open'/> {t("game-expand")}</Button>
-              <Button onClick={this.toggleModal}><FontAwesomeIcon icon='chart-bar'/> {t("game-stats")}</Button>
+          <h1>{ this.state.game.name }</h1>
+          <p className="created-at-by">{t("created-at-by", { date: this.state.startDate, author: this.state.game.owner.username })}</p>
 
-              <Button onClick={this.changeEditMode} className={classNames({ 'btn-active': this.state.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>
-            </div>
+          <div className='toolbar'>
+            <Button onClick={() => { this.setExpansionAll(false) }}><FontAwesomeIcon icon='folder'/> {t("game-collapse")}</Button>
+            <Button onClick={() => { this.setExpansionAll(true) }}><FontAwesomeIcon icon='folder-open'/> {t("game-expand")}</Button>
+            <Button onClick={this.toggleModal}><FontAwesomeIcon icon='chart-bar'/> {t("game-stats")}</Button>
 
-            {
-              this.state.game.children.map(function(n, i){
-                return <NodeComponent
-                  node={n}
-                  key={i}
-                  modifyNode={this.modifyNode}
-                  setScore={this.setScore}
-                  saveActions={this.saveActions}
-                  lastChild={this.state.game.children.length === i+1}
-                  segmentQuantity={this.state.game.children.length}
-                  updateTreeData={this.updateTreeData}
-                  latestUpdated={this.state.game.updatedAt}
-                  addNewChildSegment={this.addNewChildSegment}
-                  editable={this.state.editable}
-                  />;
+            <Button onClick={this.changeEditMode} className={classNames({ 'btn-active': this.state.editable })}><FontAwesomeIcon icon='edit'/> {t("game-edit")}</Button>
+          </div>
 
-              }.bind(this))
-            }
+          {
+            this.state.game.children.map(function(n, i){
+              return <NodeComponent
+                node={n}
+                key={i}
+                modifyNode={this.modifyNode}
+                setScore={this.setScore}
+                saveActions={this.saveActions}
+                lastChild={this.state.game.children.length === i+1}
+                segmentQuantity={this.state.game.children.length}
+                updateTreeData={this.updateTreeData}
+                latestUpdated={this.state.game.updatedAt}
+                addNewChildSegment={this.addNewChildSegment}
+                editable={this.state.editable}
+                />;
 
-            {this.state.editable? <Button onClick={()=>{ this.addNewChildSegment(-1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
+            }.bind(this))
+          }
 
-          </Col>
+          {this.state.editable? <Button onClick={()=>{ this.addNewChildSegment(-1) }}><FontAwesomeIcon icon='plus'/></Button> : ''}
 
-          <Modal isOpen={this.state.modal} toggle={this.toggleModal}>
-            <ModalHeader toggle={this.toggleModal}>{t("game-stats")}</ModalHeader>
-            <ModalBody>
-              <p>{t("page-under-construction")}</p>
-            </ModalBody>
+        </Col>
 
-            <ModalFooter>
-              <Button color="primary" onClick={this.toggleModal}>{t("modal-accept")}</Button>{' '}
-              <Button color="secondary" onClick={this.toggleModal}>{t("modal-cancel")}</Button>
-            </ModalFooter>
-          </Modal>
+        <Modal isOpen={this.state.modal} toggle={this.toggleModal}>
+          <ModalHeader toggle={this.toggleModal}>{t("game-stats")}</ModalHeader>
+          <ModalBody>
+            <p>{t("page-under-construction")}</p>
+          </ModalBody>
 
-        </Row>
-      </div>
+          <ModalFooter>
+            <Button color="primary" onClick={this.toggleModal}>{t("modal-accept")}</Button>{' '}
+            <Button color="secondary" onClick={this.toggleModal}>{t("modal-cancel")}</Button>
+          </ModalFooter>
+        </Modal>
+
+      </Row>
 
     );
   }
