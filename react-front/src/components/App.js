@@ -23,7 +23,7 @@ import {
 import { ModalBody, Modal, ModalHeader, ModalFooter } from 'reactstrap';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import '@fortawesome/fontawesome-free-solid'
+import '@fortawesome/fontawesome-free-solid';
 
 import '../compiled/App.css';
 
@@ -278,7 +278,7 @@ class App extends Component {
 
         </Container>
 
-        <div className='footer-custom text-muted'>{ Global.appName }</div>
+        <div className='footer-custom text-muted'>{ Global.appName } ・ <a href="https://github.com/FeloVilches/RTA-Practice" target="_blank">Github</a></div>
 
         <Modal isOpen={this.state.newGameModal} toggle={this.toggleNewGameModal}>
           <ModalHeader toggle={this.toggleNewGameModal} disabled={this.state.loadingCreatingNewGame}>{t("modal-create-title")}</ModalHeader>
