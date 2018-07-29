@@ -5,6 +5,7 @@
   "page-forbidden": "Access denied",
   "new-game-created": "Created successfully",
   "welcome-user": "Welcome, {{userName}}",
+  "wrong-login": "Username or password is incorrect",
 
   "modal-create-title": "Create new",
   "modal-create-enter-name": "Name",

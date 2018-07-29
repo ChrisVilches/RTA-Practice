@@ -13,47 +13,41 @@ class ActionsComponent extends React.Component {
   constructor(){
     super();
     this.state = {
-      actions: [],
-      editing: [],
+      actions: null,
       step: 0,
       scores: [],
       uploadingScore: false,
       tooltipOpen: false,
       consistencyRates: [],
       repsEachAction: [],
-      newNames: []
+      newNameInput: "",
+      editingIndex: -1
     };
-
-    this.editNameInputRef = React.createRef();
 
     this.setScore = this.setScore.bind(this);
     this.reset = this.reset.bind(this);
     this.toggleTooltip = this.toggleTooltip.bind(this);
     this.passScoresToParent = this.passScoresToParent.bind(this);
     this.onChangeActionName = this.onChangeActionName.bind(this);
-    this.createDataArrays = this.createDataArrays.bind(this);
     this.deleteAction = this.deleteAction.bind(this);
-    this.saveActions = this.saveActions.bind(this);
-    this.moveUp = this.moveUp.bind(this);
-    this.moveDown = this.moveDown.bind(this);
     this.addNewAction = this.addNewAction.bind(this);
     this.turnAllIntoFolders = this.turnAllIntoFolders.bind(this);
     this.startEditing = this.startEditing.bind(this);
+    this.updateActionName = this.updateActionName.bind(this);
   }
 
   startEditing(step){
-
-    // バグを避ける
-    for(let i in this.state.editing){
-      if(this.state.editing[i] === true) return;
-    }
-
-    let editing = this.state.editing;
-    editing[step] = true;
     this.setState({
-      editing
+      editingIndex: step,
+      newNameInput: this.state.actions.children[step].name
     });
+  }
 
+  updateActionName(){
+    let nodeId = this.state.actions.children[this.state.editingIndex].nodeId;
+    let name = this.state.newNameInput;
+    this.setState({ editingIndex: -1 });
+    this.props.updateActionName(this.props.tree.game.children, this.props.tree.gameId, nodeId, name);
   }
 
 
@@ -97,114 +91,19 @@ class ActionsComponent extends React.Component {
 
 
   addNewAction(){
-    let temp = this.state.newNames;
-    temp.push({
-      name: '',
-      nodeId: -1
-    });
-
-    this.setState({ newNames: temp });
-
-    this.saveActions();
-  }
-
-  moveUp(index){
-    if(index === 0) return;
-
-    let newNames = this.state.newNames;
-
-    let temp = newNames[index];
-    newNames[index] = newNames[index-1];
-    newNames[index-1] = temp;
-
-    this.setState({ newNames });
-
-    this.saveActions();
-  }
-
-  moveDown(index){
-
-    let newNames = this.state.newNames;
-
-    if(index === newNames.length-1) return;
-
-    let temp = newNames[index];
-    newNames[index] = newNames[index+1];
-    newNames[index+1] = temp;
-
-    this.setState({ newNames });
-
-    this.saveActions();
-  }
-
-
-  saveActions(){
-
-    let editing = this.state.editing;
-    for(let i=0; i < editing.length; i++){
-      editing[i] = false;
-    }
-    this.setState({ editing });
-
-    let newChildren = [];
-
-    let newNames = this.state.newNames;
-    let actions = this.state.actions.children;
-
-    for(let i=0; i < newNames.length; i++){
-      let oldChild;
-
-      if(newNames[i].nodeId === -1){
-
-        // 新しい
-        oldChild = {
-          name: newNames[i].name,
-          scores: []
-        };
-
-      } else {
-        for(let j=0; j < actions.length; j++){
-          if(newNames[i].nodeId === actions[j].nodeId){
-            oldChild = actions[j];
-            break;
-          }
-        }
-        oldChild.name = newNames[i].name;
-      }
-      newChildren.push(oldChild);
-    }
-
-    this.props.saveActions(this.state.actions.nodeId, newChildren, function(){
-
-      this.createDataArrays();
-
-    }.bind(this));
-
+    this.props.addNewAction(this.props.tree.game.children, this.props.tree.gameId, this.props.parentId);
   }
 
 
 
-  deleteAction(index){
+  deleteAction(nodeId){
 
-    let temp = this.state.newNames;
-
-    temp.splice(index, 1);
-
-    this.setState({
-      newNames: temp
-    });
-
-    this.saveActions();
+    this.props.deleteAction(this.props.tree.game.children, this.props.tree.gameId, nodeId);
   }
 
-  onChangeActionName(ev, i){
+  onChangeActionName(ev){
     ev.preventDefault();
-
-    let temp = this.state.newNames;
-
-    temp[i].name = ev.target.value;
-
-    this.setState({ newNames: temp });
+    this.setState({ newNameInput: ev.target.value });
   }
 
 
@@ -254,35 +153,15 @@ class ActionsComponent extends React.Component {
     });
   }
 
-  createDataArrays(){
-    let newNames = [];
-    let editing = [];
-
-    for(let i=0; i < this.state.actions.children.length; i++){
-      newNames.push({
-        nodeId: this.state.actions.children[i].nodeId,
-        name: this.state.actions.children[i].name
-      });
-
-      editing.push(false);
-    }
-
-    this.setState({
-      newNames,
-      editing
-    });
-  }
 
   componentDidUpdate(prevProps, prevState, snapshot){
 
     if(prevProps.tree.game.updatedAt !== this.props.tree.game.updatedAt){
       this.reset();
-      this.createDataArrays();
     }
   }
 
   componentDidMount(){
-    this.createDataArrays();
     this.props.onRef(this);
   }
 
@@ -300,12 +179,11 @@ class ActionsComponent extends React.Component {
 
           <div key={i} className='action-item' ref={provided.innerRef} {...provided.draggableProps}>
 
-            {this.state.editing[i]?
+            {this.state.editingIndex === i?
 
-              <Form className="mt-2 mb-2" inline onSubmit={ev => { ev.preventDefault(); this.saveActions(); }}>
-                <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(i)}}><FontAwesomeIcon icon='times'/></Button>
-                <Input autoFocus ref={r => this.editNameInputRef = r } className='margin-right' value={this.state.newNames[i].name} onChange={(e) => {this.onChangeActionName(e, i)}} onBlur={()=>{setTimeout(this.saveActions.bind(this), 100)}}/>
-
+              <Form className="mt-2 mb-2" inline onSubmit={ev => { ev.preventDefault(); this.updateActionName(); }}>
+                <Button className='margin-right' color='danger' onClick={() => {this.deleteAction(n.nodeId)}}><FontAwesomeIcon icon='times'/></Button>
+                <Input autoFocus className='margin-right' value={this.state.newNameInput} onChange={this.onChangeActionName} onBlur={()=>{setTimeout(this.updateActionName.bind(this), 100)}}/>
               </Form>
 
               :

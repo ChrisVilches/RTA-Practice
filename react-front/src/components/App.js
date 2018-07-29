@@ -47,7 +47,6 @@ class App extends Component {
     this.updateInputUserValue = this.updateInputUserValue.bind(this);
     this.updateInputPassValue = this.updateInputPassValue.bind(this);
     this.logout = this.logout.bind(this);
-    this.unauthorizedAction = this.unauthorizedAction.bind(this);
     this.addNotification = this.addNotification.bind(this);
     this.toggleNewGameModal = this.toggleNewGameModal.bind(this);
     this.createNewGame = this.createNewGame.bind(this);
@@ -55,8 +54,6 @@ class App extends Component {
     this.onChangeNewGameBgImage = this.onChangeNewGameBgImage.bind(this);
 
     this.authService = new AuthService();
-
-    AuthService.setUnauthCallback(this.unauthorizedAction);
 
   }
 
@@ -120,11 +117,6 @@ class App extends Component {
   }
 
 
-  unauthorizedAction(){
-    this.props.history.push('/');
-    this.addNotification(this.props.t("page-forbidden"), 'error');
-  }
-
 
   componentDidMount(){
 
@@ -162,8 +154,8 @@ class App extends Component {
       }
     }.bind(this))
     .catch(function(err){
-      console.log(err);
-    });
+      this.addNotification(this.props.t("wrong-login"), 'error');
+    }.bind(this));
 
   }
 

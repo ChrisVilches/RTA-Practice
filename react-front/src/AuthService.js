@@ -5,11 +5,6 @@ import decode from 'jwt-decode';
 *
 */
 
-let _unauthCallback = () => {
-
-  console.log("注意：setUnauthCallbackの内容がまだ設定されていない");
-};
-
 class AuthService {
   // Initializing important variables
   constructor(domain) {
@@ -19,11 +14,6 @@ class AuthService {
     this.getProfile = this.getProfile.bind(this)
     this.checkStatus = this.checkStatus.bind(this);
   }
-
-  static setUnauthCallback(callback){
-    _unauthCallback = callback;
-  }
-
 
   login(username, password) {
     // Get a token from api server using the fetch api
@@ -103,12 +93,6 @@ class AuthService {
   }
 
   checkStatus(response) {
-
-    if(response.status === 401){
-      _unauthCallback();
-      return;
-
-    }
 
     // raises an error in case response status is not a success
     if (response.status >= 200 && response.status < 300) { // Success status lies between 200 to 300

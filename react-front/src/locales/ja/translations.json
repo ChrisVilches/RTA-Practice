@@ -6,6 +6,7 @@
   "page-forbidden": "閲覧禁止",
   "new-game-created": "作成しました",
   "welcome-user": "ようこそ、{{userName}}さん",
+  "wrong-login": "ユーザー名またはパスワードが間違っています",
 
   "modal-create-title": "新規作成",
   "modal-create-enter-name": "名前を入力してください",
