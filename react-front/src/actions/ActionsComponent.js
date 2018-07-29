@@ -34,3 +34,15 @@ export const updateActionName = function(segments, gameId, nodeId, name, callbac
   };
 
 }
+
+
+export const saveActions = function(segments, gameId, parentId, actions, callback = ()=>{}){
+
+  return dispatch => {
+
+    let newSegments = tree.updateNode(segments, parentId, x => x.children = actions);
+    dispatch(gameActions.updateTreeData(newSegments, gameId, callback));
+
+  };
+
+}

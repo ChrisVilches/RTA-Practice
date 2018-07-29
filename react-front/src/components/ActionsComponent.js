@@ -86,15 +86,13 @@ class ActionsComponent extends React.Component {
         delete actions[i]['scores'];
       }
     }
-    this.props.saveActions(this.state.actions.nodeId, actions);
+    this.props.saveActions(this.props.tree.game.children, this.props.tree.gameId, this.props.parentId, actions);
   }
 
-
+  
   addNewAction(){
     this.props.addNewAction(this.props.tree.game.children, this.props.tree.gameId, this.props.parentId);
   }
-
-
 
   deleteAction(nodeId){
 
@@ -245,8 +243,7 @@ class ActionsComponent extends React.Component {
 ActionsComponent.propTypes = {
   setScore: PropTypes.func.isRequired,
   actions: PropTypes.object.isRequired,
-  parentId: PropTypes.number.isRequired,
-  saveActions: PropTypes.func.isRequired
+  parentId: PropTypes.number.isRequired
 };
 
 export default translate('translations')(ActionsComponent);

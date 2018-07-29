@@ -11,3 +11,14 @@ export const addNewChildSegment = function(segments, gameId, nodeId, name, callb
   };
 
 }
+
+
+export const removeNode = function(segments, gameId, nodeId, callback = ()=>{}){
+
+  return dispatch => {
+
+    let newSegments = tree.removeNode(segments, nodeId);
+    dispatch(gameActions.updateTreeData(newSegments, gameId, callback));
+  };
+
+}

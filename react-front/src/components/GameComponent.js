@@ -25,9 +25,7 @@ class GameComponent extends Component {
     this.toggle = this.toggle.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.setScore = this.setScore.bind(this);
-    this.saveActions = this.saveActions.bind(this);
     this.modifyNode = this.modifyNode.bind(this);
-    this.removeNode = this.removeNode.bind(this);
     this.loadGame = this.loadGame.bind(this);
     this.onChangeNewNodeNameInput = this.onChangeNewNodeNameInput.bind(this);
     this.addNewNode = this.addNewNode.bind(this);
@@ -78,24 +76,6 @@ class GameComponent extends Component {
     this.props.updateTreeData(segments, this.gameId, callback);
   }
 
-  removeNode(nodeId, callback = ()=>{}){
-    let segments = this.game.children;
-    segments = tree.removeNode(segments, nodeId);
-    this.props.updateTreeData(segments, this.gameId, callback);
-  }
-
-
-  saveActions(nodeId, newActionNodes, callback = () => {}){
-
-    let treeTemp = this.game.children;
-
-    treeTemp = tree.updateNode(treeTemp, nodeId, function(n){
-      n.children = newActionNodes;
-    });
-
-    this.props.updateTreeData(treeTemp, this.gameId, callback);
-
-  }
 
 
   setScore(scores, nodeId, actionCallback){
@@ -195,11 +175,8 @@ class GameComponent extends Component {
                 node={node}
                 modifyNode={this.modifyNode}
                 parentId={-1}
-                removeNode={this.removeNode}
                 setScore={this.setScore}
-                saveActions={this.saveActions}
-                dragProperties={provided.dragHandleProps}
-                lastChild={this.game.children.length === i+1}/>
+                dragProperties={provided.dragHandleProps}/>
             </div>
             )}</DragDropComponent>
 

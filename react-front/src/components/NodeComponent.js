@@ -16,7 +16,6 @@ class NodeComponent extends React.Component {
 
     this.state = {
       modal: false,
-      loadingTurningIntoSingles: false,
       newNodeNameInput: null,
       dropdownOpen: false,
       editingName: false
@@ -59,7 +58,7 @@ class NodeComponent extends React.Component {
   }
 
   removeThisNode(){
-    this.props.removeNode(this.state.node.nodeId);
+    this.props.removeNode(this.props.tree.game.children, this.props.tree.gameId, this.state.node.nodeId);
   }
 
 
@@ -81,14 +80,10 @@ class NodeComponent extends React.Component {
 
   onClickTurnSingleActions(ev){
     ev.preventDefault();
+    let children = this.state.node.children;
+    children.map(child => delete child.children);
+    this.props.saveActions(this.props.tree.game.children, this.props.tree.gameId, this.state.node.nodeId, children);
 
-    let node = this.state.node;
-    node.children.map(child => delete child.children);
-    this.setState({ loadingTurningIntoSingles: true });
-
-    this.props.saveActions(node.nodeId, node.children, function(){
-      this.setState({ loadingTurningIntoSingles: false });
-    }.bind(this));
   }
 
 
@@ -215,12 +210,9 @@ class NodeComponent extends React.Component {
                     <NodeComponentContainer.default
                       node={n}
                       parentId={node.nodeId}
-                      lastChild={node.children.length === i+1 }
                       setScore={this.props.setScore}
                       dragProperties={provided.dragHandleProps}
-                      saveActions={this.props.saveActions}
                       modifyNode={this.props.modifyNode}
-                      removeNode={this.props.removeNode}
                       t={this.props.t}
                       />
                     </div>
@@ -236,7 +228,6 @@ class NodeComponent extends React.Component {
                 <ActionsComponent
                   actions={node}
                   parentId={node.nodeId}
-                  saveActions={this.props.saveActions}
                   setScore={this.props.setScore}
                   onRef={a => this.actionsComponent = a}/>
               </li>
@@ -258,11 +249,8 @@ class NodeComponent extends React.Component {
 NodeComponent.propTypes = {
   setScore: PropTypes.func.isRequired,
   parentId: PropTypes.number.isRequired,
-  saveActions: PropTypes.func.isRequired,
   node: PropTypes.object.isRequired,
-  lastChild: PropTypes.bool.isRequired,
-  modifyNode: PropTypes.func.isRequired,
-  removeNode: PropTypes.func.isRequired
+  modifyNode: PropTypes.func.isRequired
 };
 
 
