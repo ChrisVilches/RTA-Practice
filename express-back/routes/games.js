@@ -109,6 +109,23 @@ router.get('/', passport.authenticate('jwt', { session: false }), requireUserAnd
 }, returnData);
 
 
+
+router.delete('/:id', passport.authenticate('jwt', { session: false }), requireUserAndSetUserId, function(req, res, next) {
+
+  Game.deleteOne({ _id: req.params.id.toString(), owner: res.locals.loggedUserId }, function(err, game) {
+    if(err){
+      res.locals.err = err;
+      return next();
+    }
+
+    return res.status(200).json({
+      message: "Deleted"
+    });
+  });
+
+});
+
+
 router.get('/:id', passport.authenticate('jwt', { session: false }), requireUserAndSetUserId, function(req, res, next) {
 
   let game = Game.findOne({ _id: req.params.id.toString() }).populate('owner', 'username').exec()
@@ -116,7 +133,6 @@ router.get('/:id', passport.authenticate('jwt', { session: false }), requireUser
   .catch(err => { res.locals.err = err; next(); });
 
 }, authorizeGame, returnData);
-
 
 
 router.post('/', passport.authenticate('jwt', { session: false }), requireUserAndSetUserId, function(req, res, next) {
