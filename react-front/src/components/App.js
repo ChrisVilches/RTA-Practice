@@ -205,7 +205,7 @@ class App extends Component {
     </NavItem>;
 
     return (
-      <div className='index'>
+      <div className='d-flex flex-column wrapper'>
 
         <div className='navbar-custom'>
           <Navbar expand="md" fixed='top' className='navbar-custom'>
@@ -266,7 +266,7 @@ class App extends Component {
         <br/>
         <br/>
 
-        <Container className='main-container'>
+        <Container className='main-container flex-fill'>
           <Switch>
             <Route exact path="/" component={HomeComponent} />
             <Route path="/game/:gameId" component={GameComponent} />

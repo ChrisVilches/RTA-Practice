@@ -22,6 +22,9 @@ a {
   }
 }
 
+body, .wrapper {
+  min-height:100vh;
+}
 
 .btn {
   border: 0;
