@@ -112,6 +112,8 @@ router.get('/', passport.authenticate('jwt', { session: false }), requireUserAnd
 
 router.delete('/:id', passport.authenticate('jwt', { session: false }), requireUserAndSetUserId, function(req, res, next) {
 
+  // It should throw "unauthorized" if the logged user isn't the owner.
+
   Game.deleteOne({ _id: req.params.id.toString(), owner: res.locals.loggedUserId }, function(err, game) {
     if(err){
       res.locals.err = err;
